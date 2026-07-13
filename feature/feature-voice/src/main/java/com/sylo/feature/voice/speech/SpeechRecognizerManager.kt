@@ -15,6 +15,19 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Dictation language the user can pick for voice expense capture. */
+enum class VoiceLanguage(val languageTag: String, val label: String) {
+    ENGLISH("en-US", "EN"),
+    ARABIC("ar-SA", "AR"),
+    ;
+
+    companion object {
+        /** Arabic if the device's default locale is Arabic, English otherwise. */
+        fun systemDefault(): VoiceLanguage =
+            if (Locale.getDefault().language == "ar") ARABIC else ENGLISH
+    }
+}
+
 /**
  * Thin wrapper around Android's on-device [SpeechRecognizer]. Exposes recognition
  * progress as a [StateFlow] the UI/ViewModel can observe.

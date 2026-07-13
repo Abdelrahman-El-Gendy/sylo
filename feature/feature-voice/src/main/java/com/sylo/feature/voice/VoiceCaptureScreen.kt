@@ -59,6 +59,7 @@ import com.sylo.core.database.entity.TransactionEntity
 import com.sylo.core.ui.component.SyloTopBar
 import com.sylo.core.ui.theme.SyloBrandCyan
 import com.sylo.core.ui.theme.SyloSpacing
+import com.sylo.feature.voice.speech.VoiceLanguage
 import kotlin.math.abs
 
 @Composable
@@ -70,6 +71,7 @@ fun VoiceCaptureRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
     val currency by viewModel.currency.collectAsStateWithLifecycle()
+    val language by viewModel.language.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var hasPermission by remember {
@@ -94,6 +96,8 @@ fun VoiceCaptureRoute(
         error = if (!hasPermission) "Microphone permission is required" else state.error,
         category = category,
         insight = insight,
+        language = language,
+        onLanguageChange = viewModel::setLanguage,
         onHoldStart = {
             if (hasPermission) viewModel.startListening()
             else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -112,6 +116,8 @@ private fun VoiceCaptureScreen(
     error: String?,
     category: String?,
     insight: String?,
+    language: VoiceLanguage,
+    onLanguageChange: (VoiceLanguage) -> Unit,
     onHoldStart: () -> Unit,
     onHoldEnd: () -> Unit,
     onConfirm: () -> Unit,
@@ -125,6 +131,13 @@ private fun VoiceCaptureScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SyloTopBar()
+
+        Spacer(Modifier.height(SyloSpacing.stackMd))
+        LanguageToggle(
+            selected = language,
+            enabled = !isListening,
+            onSelect = onLanguageChange,
+        )
 
         Spacer(Modifier.weight(0.4f))
         MicRing(
@@ -226,6 +239,41 @@ private fun MicRing(
             available = enabled,
             modifier = Modifier.align(Alignment.TopCenter),
         )
+    }
+}
+
+/** EN / AR segmented toggle for the dictation language, disabled mid-recording. */
+@Composable
+private fun LanguageToggle(
+    selected: VoiceLanguage,
+    enabled: Boolean,
+    onSelect: (VoiceLanguage) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        VoiceLanguage.entries.forEach { option ->
+            val isSelected = option == selected
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(if (isSelected) SyloBrandCyan else Color.Transparent)
+                    .then(if (enabled) Modifier.clickable { onSelect(option) } else Modifier)
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    option.label,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
 

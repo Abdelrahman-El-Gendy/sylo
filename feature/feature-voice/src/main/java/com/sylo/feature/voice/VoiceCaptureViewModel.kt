@@ -7,9 +7,12 @@ import com.sylo.core.database.UserPreferencesRepository
 import com.sylo.core.database.entity.TransactionEntity
 import com.sylo.feature.voice.speech.SpeechRecognizerManager
 import com.sylo.feature.voice.speech.TranscriptParser
+import com.sylo.feature.voice.speech.VoiceLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -29,8 +32,16 @@ class VoiceCaptureViewModel @Inject constructor(
     val currency: StateFlow<String> = userPreferences.currency
         .stateIn(viewModelScope, SharingStarted.Eagerly, UserPreferencesRepository.DEFAULT_CURRENCY)
 
-    /** Begins capturing while the mic is held. */
-    fun startListening() = recognizer.startListening()
+    /** Dictation language, defaulting to the device locale; user can override per-recording. */
+    private val _language = MutableStateFlow(VoiceLanguage.systemDefault())
+    val language: StateFlow<VoiceLanguage> = _language.asStateFlow()
+
+    fun setLanguage(language: VoiceLanguage) {
+        _language.value = language
+    }
+
+    /** Begins capturing while the mic is held, in the currently selected [VoiceLanguage]. */
+    fun startListening() = recognizer.startListening(_language.value.languageTag)
 
     /** Stops capturing on release; the recognizer then delivers its final result. */
     fun stopListening() = recognizer.stopListening()

@@ -20,20 +20,58 @@ object TranscriptParser {
     private val amountRegex = Regex("""(\d+(?:[.,]\d{1,2})?)""")
 
     private val currencyKeywords = mapOf(
-        "dirham" to "AED", "aed" to "AED", "dollar" to "USD", "buck" to "USD",
-        "euro" to "EUR", "pound" to "GBP", "riyal" to "SAR",
+        "dirham" to "AED", "aed" to "AED", "درهم" to "AED", "دراهم" to "AED",
+        "dollar" to "USD", "buck" to "USD", "دولار" to "USD",
+        "euro" to "EUR", "يورو" to "EUR",
+        "pound" to "GBP", "جنيه" to "GBP",
+        "riyal" to "SAR", "ريال" to "SAR", "ريالات" to "SAR",
     )
 
     private val categoryKeywords = mapOf(
-        "Food" to listOf("lunch", "dinner", "breakfast", "coffee", "food", "cafe", "restaurant", "grocery", "groceries"),
-        "Transport" to listOf("uber", "taxi", "cab", "fuel", "gas", "petrol", "bus", "train", "ride"),
-        "Shopping" to listOf("shop", "clothes", "store", "amazon", "apple"),
-        "Entertainment" to listOf("movie", "netflix", "game", "concert", "cinema"),
-        "Bills" to listOf("bill", "rent", "electricity", "subscription", "internet"),
+        "Food" to listOf(
+            "lunch", "dinner", "breakfast", "coffee", "food", "cafe", "restaurant", "grocery", "groceries",
+            "غداء", "غدا", "عشاء", "فطور", "فطار", "قهوة", "مطعم", "بقالة", "سوبرماركت",
+        ),
+        "Transport" to listOf(
+            "uber", "taxi", "cab", "fuel", "gas", "petrol", "bus", "train", "ride",
+            "أوبر", "تاكسي", "تكسي", "وقود", "بنزين", "باص", "حافلة", "قطار",
+        ),
+        "Shopping" to listOf(
+            "shop", "clothes", "store", "amazon", "apple",
+            "تسوق", "ملابس", "متجر", "محل", "أمازون",
+        ),
+        "Entertainment" to listOf(
+            "movie", "netflix", "game", "concert", "cinema",
+            "فيلم", "سينما", "نتفليكس", "لعبة", "حفلة",
+        ),
+        "Bills" to listOf(
+            "bill", "rent", "electricity", "subscription", "internet",
+            "فاتورة", "إيجار", "كهرباء", "اشتراك", "إنترنت",
+        ),
     )
 
+    /**
+     * Speech recognition in Arabic can return Eastern Arabic-Indic digits (٠-٩) or
+     * Persian ones (۰-۹), plus the Arabic decimal/thousands separators, instead of
+     * ASCII. Normalize them so [amountRegex] (which only matches ASCII digits) works
+     * regardless of dictation language.
+     */
+    private fun normalizeDigits(text: String): String = buildString(text.length) {
+        for (ch in text) {
+            append(
+                when (ch) {
+                    in '٠'..'٩' -> '0' + (ch - '٠') // Eastern Arabic-Indic
+                    in '۰'..'۹' -> '0' + (ch - '۰') // Persian
+                    '٫' -> '.' // Arabic decimal separator
+                    '٬' -> ',' // Arabic thousands separator
+                    else -> ch
+                },
+            )
+        }
+    }
+
     fun parse(transcript: String): ParsedExpense {
-        val lower = transcript.lowercase()
+        val lower = normalizeDigits(transcript).lowercase()
 
         val amount = amountRegex.find(lower)?.groupValues?.get(1)
             ?.replace(',', '.')?.toDoubleOrNull() ?: 0.0

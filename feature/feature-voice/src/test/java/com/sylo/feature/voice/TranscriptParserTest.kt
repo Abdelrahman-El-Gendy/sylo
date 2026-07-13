@@ -39,4 +39,29 @@ class TranscriptParserTest {
         assertEquals(1599L, p.amountMinor)
         assertEquals("Entertainment", p.category)
     }
+
+    @Test
+    fun parses_arabic_dirhams_and_lunch() {
+        val p = TranscriptParser.parse("اضف 45 درهم غداء")
+        assertEquals(4500L, p.amountMinor)
+        assertEquals("AED", p.currency)
+        assertEquals("Food", p.category)
+    }
+
+    @Test
+    fun parses_eastern_arabic_indic_digits_and_taxi() {
+        // "١٨٫٥٠" is 18.50 written with Eastern Arabic-Indic digits and the Arabic decimal separator.
+        val p = TranscriptParser.parse("١٨٫٥٠ ريال تاكسي")
+        assertEquals(1850L, p.amountMinor)
+        assertEquals("SAR", p.currency)
+        assertEquals("Transport", p.category)
+    }
+
+    @Test
+    fun parses_persian_digits_and_bills_category() {
+        val p = TranscriptParser.parse("۱۲۰ دولار فاتورة الكهرباء")
+        assertEquals(12000L, p.amountMinor)
+        assertEquals("USD", p.currency)
+        assertEquals("Bills", p.category)
+    }
 }
