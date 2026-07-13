@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sylo - Transaction Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(30, 34, 40, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .voice-pulse {
+            box-shadow: 0px 8px 24px rgba(0, 240, 255, 0.3);
+            background: linear-gradient(135deg, #00f0ff 0%, #00dbe9 100%);
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .text-gradient {
+            background: linear-gradient(to bottom right, #dbfcff, #00dbe9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#1d2022",
+                    "on-background": "#e0e3e5",
+                    "on-secondary-fixed-variant": "#45474a",
+                    "on-secondary-container": "#bbbbbf",
+                    "on-secondary-fixed": "#1a1c1f",
+                    "primary": "#dbfcff",
+                    "on-surface": "#e0e3e5",
+                    "surface-dim": "#101415",
+                    "on-secondary": "#2f3034",
+                    "on-primary-fixed-variant": "#004f54",
+                    "surface-container-high": "#272a2c",
+                    "on-primary": "#00363a",
+                    "background": "#101415",
+                    "primary-fixed": "#7df4ff",
+                    "on-tertiary-container": "#5b5f66",
+                    "surface-container-low": "#191c1e",
+                    "on-error": "#690005",
+                    "secondary-container": "#4a4b4f",
+                    "tertiary-fixed": "#dfe2eb",
+                    "on-tertiary": "#2d3137",
+                    "primary-container": "#00f0ff",
+                    "secondary-fixed": "#e2e2e6",
+                    "outline-variant": "#3b494b",
+                    "error": "#ffb4ab",
+                    "secondary": "#c6c6ca",
+                    "surface-container-highest": "#323537",
+                    "tertiary-container": "#d6d9e1",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#c3c6ce",
+                    "on-primary-fixed": "#002022",
+                    "on-tertiary-fixed-variant": "#43474e",
+                    "inverse-on-surface": "#2d3133",
+                    "inverse-primary": "#006970",
+                    "on-surface-variant": "#b9cacb",
+                    "surface-variant": "#323537",
+                    "inverse-surface": "#e0e3e5",
+                    "error-container": "#93000a",
+                    "on-primary-container": "#006970",
+                    "secondary-fixed-dim": "#c6c6ca",
+                    "primary-fixed-dim": "#00dbe9",
+                    "outline": "#849495",
+                    "surface-container-lowest": "#0b0f10",
+                    "on-tertiary-fixed": "#181c22",
+                    "surface-tint": "#00dbe9",
+                    "surface-bright": "#363a3b",
+                    "surface": "#101415",
+                    "tertiary": "#f3f5fe"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "gutter": "16px",
+                    "stack-lg": "32px",
+                    "section-gap": "48px",
+                    "unit": "4px",
+                    "container-margin": "24px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Geist"],
+                    "label-mono": ["JetBrains Mono"],
+                    "display-lg": ["Geist"],
+                    "headline-md": ["Geist"],
+                    "headline-lg-mobile": ["Geist"],
+                    "body-lg": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "headline-lg": ["Geist"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<!-- Top AppBar (Back Navigation Focus) -->
+<header class="fixed top-0 left-0 w-full z-40 flex justify-between items-center px-container-margin h-16 bg-surface/60 backdrop-blur-xl">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-on-surface" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="font-headline-md text-headline-md font-bold text-primary-fixed-dim tracking-tight">Sylo</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-on-surface" data-icon="share">share</span>
+</button>
+</header>
+<main class="pt-24 pb-32 px-container-margin max-w-2xl mx-auto">
+<!-- Transaction Header Hero -->
+<section class="flex flex-col items-center text-center mb-stack-lg">
+<div class="w-20 h-20 rounded-xl glass-card flex items-center justify-center mb-stack-md">
+<span class="material-symbols-outlined text-primary-fixed-dim text-4xl" data-icon="coffee">coffee</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile mb-unit">Blue Bottle Coffee</h1>
+<div class="px-3 py-1 rounded-full bg-white/5 border border-white/5 mb-stack-lg">
+<span class="font-label-mono text-label-mono uppercase tracking-wider text-on-surface-variant">Food &amp; Drink</span>
+</div>
+<div class="font-display-lg text-display-lg text-gradient">
+                -$14.50
+            </div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Monday, Oct 23 • 08:42 AM</p>
+</section>
+<!-- Detailed Insights Section (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md mb-stack-lg">
+<!-- Location Insight Card -->
+<div class="glass-card p-gutter rounded-xl flex flex-col justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-unit block">Location</span>
+<h3 class="font-headline-md text-headline-md mb-stack-md">Hayes Valley, SF</h3>
+</div>
+<div class="h-24 w-full rounded-lg overflow-hidden relative">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A stylized minimalist map of a San Francisco urban district, featuring clean dark charcoal roads and glowing neon cyan building outlines, matching a high-end financial dark mode UI aesthetic with soft blue lighting accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkEmSm4p_GlAZUESHha0-kpIvWViz30HcQW53rCtKrEMDD4gUA9wB1HvvgfI8m6pvz8kbNjJGsj4lfNE7eyckWSa_fBL8izqdpqh1JP4_Y4tqzrB7jnS1hS_qUBTrUIwibzI9wNviFRrTrwQTEX72MUpOsNQMeKdQMDR2bkB90e77fI2huNIPtSGnTDKO6gyUzcxsrjBNEfF8a2Cf5c-Od3-puyqxfDQo9gnNn-BjyLYKfitbPO83W')"></div>
+<div class="absolute inset-0 bg-primary/10 pointer-events-none"></div>
+</div>
+</div>
+<!-- Budgeting Insight Card -->
+<div class="glass-card p-gutter rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-unit block">Monthly Budget</span>
+<h3 class="font-headline-md text-headline-md mb-stack-md">Dining Out</h3>
+<div class="space-y-stack-sm">
+<div class="flex justify-between font-label-sm text-label-sm">
+<span>$412 / $500</span>
+<span class="text-primary-fixed-dim">82%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary-fixed-dim to-primary-container" style="width: 82%"></div>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant italic">"You're slightly above your average for Monday mornings."</p>
+</div>
+</div>
+</div>
+<!-- Transaction Details Meta -->
+<section class="glass-card rounded-xl divide-y divide-white/5">
+<div class="p-gutter flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Method</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="credit_card">credit_card</span>
+<span class="font-body-md text-body-md">Apple Pay •••• 9012</span>
+</div>
+</div>
+<div class="p-gutter flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Status</span>
+<span class="font-body-md text-body-md flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+                    Pending
+                </span>
+</div>
+<div class="p-gutter">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-unit block">Note</span>
+<p class="font-body-md text-body-md italic text-on-surface-variant">"Morning espresso before the leadership meeting."</p>
+</div>
+</section>
+</main>
+<!-- Bottom Actions & Voice FAB -->
+<div class="fixed bottom-0 left-0 w-full z-50 bg-surface-container/80 backdrop-blur-2xl border-t border-white/5 pb-8 pt-4 px-container-margin">
+<div class="max-w-2xl mx-auto flex items-center justify-between gap-gutter">
+<!-- Delete Action -->
+<button class="flex-1 flex items-center justify-center gap-2 h-14 rounded-xl glass-card hover:bg-error-container/20 active:scale-95 transition-all text-error">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+<span class="font-headline-md text-headline-md">Delete</span>
+</button>
+<!-- Voice FAB (The Centerpiece) -->
+<div class="relative flex-shrink-0">
+<div class="absolute inset-0 voice-pulse rounded-full animate-pulse-subtle -z-10"></div>
+<button class="w-16 h-16 rounded-full voice-pulse flex items-center justify-center text-on-primary-fixed shadow-lg active:scale-90 duration-150 group">
+<span class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform" data-icon="mic" data-weight="fill" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<!-- Edit Action -->
+<button class="flex-1 flex items-center justify-center gap-2 h-14 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+<span class="font-headline-md text-headline-md">Edit</span>
+</button>
+</div>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Subtle haptic feedback simulation or ripple would go here
+                console.log('Action triggered');
+            });
+        });
+    </script>
+</body></html>

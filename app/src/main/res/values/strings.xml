@@ -1,0 +1,4 @@
+<resources>
+    <!-- app_name is provided per product flavor via resValue (see app/build.gradle.kts):
+         "Sylo" (prod), "Sylo Dev", "Sylo Staging". -->
+</resources>

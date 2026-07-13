@@ -1,0 +1,24 @@
+package com.sylo.core.database.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.sylo.core.database.entity.TransactionEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface TransactionDao {
+
+    @Query("SELECT * FROM transactions ORDER BY timestampEpochMillis DESC")
+    fun observeAll(): Flow<List<TransactionEntity>>
+
+    @Query("SELECT * FROM transactions WHERE id = :id")
+    suspend fun getById(id: String): TransactionEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(transaction: TransactionEntity)
+
+    @Query("DELETE FROM transactions WHERE id = :id")
+    suspend fun deleteById(id: String)
+}

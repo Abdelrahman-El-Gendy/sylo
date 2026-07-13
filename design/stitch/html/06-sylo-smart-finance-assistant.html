@@ -1,0 +1,340 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Sylo - Smart Finance Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            background-color: #101415;
+            color: #e0e3e5;
+            font-family: 'Geist', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(30, 34, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .voice-fab-glow {
+            box-shadow: 0px 8px 24px rgba(0, 240, 255, 0.3);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        .sparkline-gradient {
+            fill: url(#sparklineGradient);
+            stroke: #00f0ff;
+            stroke-width: 2;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#1d2022",
+                        "on-background": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#45474a",
+                        "on-secondary-container": "#bbbbbf",
+                        "on-secondary-fixed": "#1a1c1f",
+                        "primary": "#dbfcff",
+                        "on-surface": "#e0e3e5",
+                        "surface-dim": "#101415",
+                        "on-secondary": "#2f3034",
+                        "on-primary-fixed-variant": "#004f54",
+                        "surface-container-high": "#272a2c",
+                        "on-primary": "#00363a",
+                        "background": "#101415",
+                        "primary-fixed": "#7df4ff",
+                        "on-tertiary-container": "#5b5f66",
+                        "surface-container-low": "#191c1e",
+                        "on-error": "#690005",
+                        "secondary-container": "#4a4b4f",
+                        "tertiary-fixed": "#dfe2eb",
+                        "on-tertiary": "#2d3137",
+                        "primary-container": "#00f0ff",
+                        "secondary-fixed": "#e2e2e6",
+                        "outline-variant": "#3b494b",
+                        "error": "#ffb4ab",
+                        "secondary": "#c6c6ca",
+                        "surface-container-highest": "#323537",
+                        "tertiary-container": "#d6d9e1",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c3c6ce",
+                        "on-primary-fixed": "#002022",
+                        "on-tertiary-fixed-variant": "#43474e",
+                        "inverse-on-surface": "#2d3133",
+                        "inverse-primary": "#006970",
+                        "on-surface-variant": "#b9cacb",
+                        "surface-variant": "#323537",
+                        "inverse-surface": "#e0e3e5",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#006970",
+                        "secondary-fixed-dim": "#c6c6ca",
+                        "primary-fixed-dim": "#00dbe9",
+                        "outline": "#849495",
+                        "surface-container-lowest": "#0b0f10",
+                        "on-tertiary-fixed": "#181c22",
+                        "surface-tint": "#00dbe9",
+                        "surface-bright": "#363a3b",
+                        "surface": "#101415",
+                        "tertiary": "#f3f5fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "gutter": "16px",
+                        "stack-lg": "32px",
+                        "section-gap": "48px",
+                        "unit": "4px",
+                        "container-margin": "24px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "label-mono": ["JetBrains Mono"],
+                        "display-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-40 flex justify-between items-center px-container-margin h-16 bg-surface/60 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A close-up high-fashion portrait of a young professional with soft cinematic lighting. The background is a minimalist dark gray studio setting. The image uses a cool-toned color palette with deep blacks and subtle cyan highlights to match a premium financial app aesthetic. Sharp focus on facial details with a sophisticated, intelligent expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaU1Vz2BZfVKz7y3Inglg0dDNFlFuPRMJS7x3aCzNytn6cHUY9EYYFLwyZozpITeWnysho29rNhVe-IF3pUhbtUAkWhT-SU4t44xwHMkpEGtJZB9ld2Pi2WO1IEmXhfy8SQIhoN9NNShgja5tvCt3Z5qhN3uiLZlyAtQS3OvHYqHiniZTR--8y_oQIi4d2SsxlSStGFdd4ANQSFKlt1TRBYMa4rg7m4aYzt_aQigP5h_D9DEOprCgX">
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary-fixed-dim tracking-tight">Sylo</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary-fixed-dim">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-container-margin max-w-2xl mx-auto space-y-stack-lg">
+<!-- Wallet Summary -->
+<section class="space-y-unit">
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest opacity-60">Total Balance</p>
+<div class="flex items-baseline gap-2">
+<h1 class="font-display-lg text-display-lg text-primary">$12,450.00</h1>
+<span class="text-primary-fixed-dim font-label-mono text-label-mono bg-primary-container/10 px-2 py-0.5 rounded-lg">+2.4%</span>
+</div>
+</section>
+<!-- Spending Insights Bento -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<!-- Main Monthly Spending Card -->
+<div class="glass-card rounded-xl p-stack-md flex flex-col justify-between aspect-[16/10] md:aspect-auto">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-on-surface-variant font-label-sm text-label-sm">This Month</p>
+<h2 class="font-headline-lg text-headline-lg-mobile text-on-surface">$3,242.15</h2>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-40">arrow_outward</span>
+</div>
+<!-- Sparkline Mockup -->
+<div class="mt-4 h-16 w-full overflow-hidden">
+<svg class="w-full h-full" viewBox="0 0 200 60">
+<defs>
+<linearGradient id="sparklineGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#00f0ff" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#00f0ff" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+<path class="sparkline-gradient" d="M0 50 Q 25 45, 50 55 T 100 30 T 150 40 T 200 10 L 200 60 L 0 60 Z"></path>
+<path d="M0 50 Q 25 45, 50 55 T 100 30 T 150 40 T 200 10" fill="none" stroke="#00f0ff" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Smart Tip / Category Insight -->
+<div class="glass-card rounded-xl p-stack-md flex flex-col gap-stack-sm border-primary-container/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<span class="font-label-sm text-label-sm text-primary-container">Sylo Insight</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-tight">
+                    You've spent <span class="text-primary-fixed-dim font-bold">12% less</span> on dining out than last month. 
+                </p>
+<div class="mt-auto pt-4 flex gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 font-label-mono text-[10px] text-on-surface-variant uppercase">Dining</span>
+<span class="px-3 py-1 rounded-full bg-white/5 font-label-mono text-[10px] text-on-surface-variant uppercase">Savings</span>
+</div>
+</div>
+</section>
+<!-- Recent Transactions -->
+<section class="space-y-stack-md">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Transactions</h3>
+<button class="text-primary-fixed-dim font-label-sm text-label-sm hover:underline">View all</button>
+</div>
+<div class="space-y-unit">
+<!-- Item 1: Grocery -->
+<div class="flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors rounded-xl group">
+<div class="flex items-center gap-stack-md">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim">shopping_basket</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Whole Foods Market</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-60">Today, 2:45 PM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-on-surface">-$84.20</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-60">Groceries</p>
+</div>
+</div>
+<!-- Item 2: Uber -->
+<div class="flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors rounded-xl group">
+<div class="flex items-center gap-stack-md">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim">directions_car</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Uber Trip</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-60">Yesterday, 11:30 PM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-on-surface">-$18.50</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-60">Transport</p>
+</div>
+</div>
+<!-- Item 3: Netflix -->
+<div class="flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors rounded-xl group">
+<div class="flex items-center gap-stack-md">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim">movie</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Netflix Subscription</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-60">Sep 12, 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-on-surface">-$15.99</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-60">Entertainment</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Budget Progress Section -->
+<section class="glass-card rounded-xl p-stack-md space-y-stack-md">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Monthly Budget</span>
+<span class="font-label-mono text-label-mono text-primary-fixed-dim">74% Used</span>
+</div>
+<div class="relative h-2 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary-container to-success-green-500 rounded-full" style="width: 74%; background-color: #00f0ff;"></div>
+</div>
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-60 text-center">
+                $1,150 left out of $4,500
+            </p>
+</section>
+</main>
+<!-- Voice FAB (Floating Action Button) -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50">
+<button class="w-16 h-16 rounded-full bg-gradient-to-br from-primary-container to-primary-fixed-dim flex items-center justify-center voice-fab-glow hover:scale-110 active:scale-90 transition-all duration-300 group" id="voice-fab">
+<span class="material-symbols-outlined text-on-primary-fixed text-3xl font-bold group-hover:rotate-12 transition-transform">mic</span>
+<div class="absolute -z-10 w-full h-full rounded-full bg-primary-container/20 pulse-animation"></div>
+</button>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container/80 backdrop-blur-2xl border-t border-white/5 shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-primary-fixed-dim font-bold transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<div class="w-16"></div> <!-- Spacer for FAB -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-label-sm text-label-sm">Analytics</span>
+</a>
+
+</nav>
+<script>
+        // Micro-interaction for Voice FAB
+        const fab = document.getElementById('voice-fab');
+        let isListening = false;
+
+        fab.addEventListener('click', () => {
+            isListening = !isListening;
+            if (isListening) {
+                fab.classList.add('ring-4', 'ring-primary-container/40');
+                // Haptic feedback simulation or additional visual cues could go here
+            } else {
+                fab.classList.remove('ring-4', 'ring-primary-container/40');
+            }
+        });
+
+        // Add subtle parallax to glass cards on mouse move (Desktop Only)
+        if (window.innerWidth > 768) {
+            document.addEventListener('mousemove', (e) => {
+                const cards = document.querySelectorAll('.glass-card');
+                const x = (window.innerWidth / 2 - e.pageX) / 100;
+                const y = (window.innerHeight / 2 - e.pageY) / 100;
+                
+                cards.forEach(card => {
+                    card.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+                });
+            });
+        }
+    </script>
+
+
+</body></html>

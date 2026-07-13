@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sylo - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Geist:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(30, 34, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        body {
+            background-color: #101415;
+            color: #e0e3e5;
+            -webkit-font-smoothing: antialiased;
+        }
+        .active-glow {
+            text-shadow: 0 0 10px rgba(0, 219, 233, 0.4);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container": "#1d2022",
+                      "on-background": "#e0e3e5",
+                      "on-secondary-fixed-variant": "#45474a",
+                      "on-secondary-container": "#bbbbbf",
+                      "on-secondary-fixed": "#1a1c1f",
+                      "primary": "#dbfcff",
+                      "on-surface": "#e0e3e5",
+                      "surface-dim": "#101415",
+                      "on-secondary": "#2f3034",
+                      "on-primary-fixed-variant": "#004f54",
+                      "surface-container-high": "#272a2c",
+                      "on-primary": "#00363a",
+                      "background": "#101415",
+                      "primary-fixed": "#7df4ff",
+                      "on-tertiary-container": "#5b5f66",
+                      "surface-container-low": "#191c1e",
+                      "on-error": "#690005",
+                      "secondary-container": "#4a4b4f",
+                      "tertiary-fixed": "#dfe2eb",
+                      "on-tertiary": "#2d3137",
+                      "primary-container": "#00f0ff",
+                      "secondary-fixed": "#e2e2e6",
+                      "outline-variant": "#3b494b",
+                      "error": "#ffb4ab",
+                      "secondary": "#c6c6ca",
+                      "surface-container-highest": "#323537",
+                      "tertiary-container": "#d6d9e1",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#c3c6ce",
+                      "on-primary-fixed": "#002022",
+                      "on-tertiary-fixed-variant": "#43474e",
+                      "inverse-on-surface": "#2d3133",
+                      "inverse-primary": "#006970",
+                      "on-surface-variant": "#b9cacb",
+                      "surface-variant": "#323537",
+                      "inverse-surface": "#e0e3e5",
+                      "error-container": "#93000a",
+                      "on-primary-container": "#006970",
+                      "secondary-fixed-dim": "#c6c6ca",
+                      "primary-fixed-dim": "#00dbe9",
+                      "outline": "#849495",
+                      "surface-container-lowest": "#0b0f10",
+                      "on-tertiary-fixed": "#181c22",
+                      "surface-tint": "#00dbe9",
+                      "surface-bright": "#363a3b",
+                      "surface": "#101415",
+                      "tertiary": "#f3f5fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-sm": "8px",
+                      "gutter": "16px",
+                      "stack-lg": "32px",
+                      "section-gap": "48px",
+                      "unit": "4px",
+                      "container-margin": "24px",
+                      "stack-md": "16px"
+              },
+              "fontFamily": {
+                      "body-md": ["Geist"],
+                      "label-mono": ["JetBrains Mono"],
+                      "display-lg": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "headline-lg-mobile": ["Geist"],
+                      "body-lg": ["Geist"],
+                      "label-sm": ["Geist"],
+                      "headline-lg": ["Geist"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- Top AppBar -->
+<header class="fixed top-0 left-0 w-full z-40 flex justify-between items-center px-container-margin h-16 bg-surface/60 backdrop-blur-xl">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="A professional, close-up studio portrait of a sophisticated user in a dimly lit, high-end tech environment. The subject has a calm and intelligent expression, with soft cinematic lighting reflecting off a sleek, dark glass background. The color palette is dominated by charcoal and deep navy with subtle cyan accents, matching the Sylo financial app's modern minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6dC_AcabRwjFSzf2oaeN66j35fb4tsOS7vsoQ7AmsNAIpabrgfBnVzGa__I9Twk6kSNS472ZQWfnyR0XuDkl36Gdoak2RWdPtmK79kn4TzdrgG4NUzlRVIlKegCeK73zIbgFyD2GqQY-hjCHo24zERHFNrEqjsmr3wCMrCQLj1RujGpQxdAiaf_sKTGEBuNbeHix8yqvcDfkFKfz48a6efcPKN-vSFqVtyNx4ZyqoiF0F19-eHYYg"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary-fixed-dim tracking-tight">Sylo</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-container-margin max-w-2xl mx-auto">
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">Settings</h2>
+<p class="text-on-surface-variant font-body-md">Manage your financial assistant and security preferences.</p>
+</div>
+<!-- Security Group -->
+<section class="mb-stack-lg">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-on-secondary-container mb-stack-sm px-1">Security</h3>
+<div class="glass-panel rounded-xl overflow-hidden divide-y divide-white/5">
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="lock_open">lock_open</span>
+</div>
+<span class="font-body-md text-on-surface">Change PIN</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<div class="w-full flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="fingerprint">fingerprint</span>
+</div>
+<div class="flex flex-col items-start">
+<span class="font-body-md text-on-surface">Biometrics</span>
+<span class="font-label-sm text-on-surface-variant">Use FaceID or Fingerprint</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-secondary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Preferences Group -->
+<section class="mb-stack-lg">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-on-secondary-container mb-stack-sm px-1">Preferences</h3>
+<div class="glass-panel rounded-xl overflow-hidden divide-y divide-white/5">
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="category">category</span>
+</div>
+<span class="font-body-md text-on-surface">Categories</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="notifications_active">notifications_active</span>
+</div>
+<span class="font-body-md text-on-surface">Notifications</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-on-primary-container bg-primary-container/20 px-2 py-0.5 rounded-full">Active</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Account Group -->
+<section class="mb-stack-lg">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-on-secondary-container mb-stack-sm px-1">Account</h3>
+<div class="glass-panel rounded-xl overflow-hidden divide-y divide-white/5">
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-white/5 transition-colors group">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-icon="logout">logout</span>
+</div>
+<span class="font-body-md text-error">Logout</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Branding/Footer Info -->
+<div class="text-center mt-stack-lg opacity-40">
+<p class="font-label-mono text-label-sm">SYLO FINANCIAL ENGINE V2.4.1</p>
+<p class="font-label-sm text-label-sm mt-1">Intelligent. Effortless. Trustworthy.</p>
+</div>
+</main>
+<!-- Voice FAB (Centerpiece) -->
+<button class="fixed bottom-24 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full bg-gradient-to-tr from-primary-container to-primary-fixed shadow-[0px_8px_24px_rgba(0,240,255,0.3)] flex items-center justify-center z-[60] active:scale-95 transition-transform group overflow-hidden">
+<div class="absolute inset-0 bg-white/20 opacity-0 group-active:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-on-primary-fixed text-3xl" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+<!-- Pulse effect -->
+<div class="absolute inset-0 rounded-full border-4 border-primary-container/30 animate-ping"></div>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container/80 backdrop-blur-2xl border-t border-white/5 shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm mt-1">History</span>
+</a>
+<div class="w-12 h-1 flex"></div> <!-- Spacer for FAB -->
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="insert_chart">insert_chart</span>
+<span class="font-label-sm text-label-sm mt-1">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-fixed-dim font-bold active-glow transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-sm text-label-sm mt-1">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for toggling switches
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.closest('div');
+                if(this.checked) {
+                    console.log('Feature enabled');
+                } else {
+                    console.log('Feature disabled');
+                }
+            });
+        });
+
+        // Simple haptic-like scale effect on buttons
+        const interactiveItems = document.querySelectorAll('button, a');
+        interactiveItems.forEach(item => {
+            item.addEventListener('touchstart', () => {
+                item.style.transform = 'scale(0.97)';
+            });
+            item.addEventListener('touchend', () => {
+                item.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

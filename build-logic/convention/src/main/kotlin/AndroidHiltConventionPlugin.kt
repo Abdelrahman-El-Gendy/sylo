@@ -1,0 +1,22 @@
+import com.sylo.buildlogic.libs
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
+
+/**
+ * Adds Hilt DI to a module: the KSP + Hilt Gradle plugins and the runtime +
+ * compiler dependencies.
+ */
+class AndroidHiltConventionPlugin : Plugin<Project> {
+    override fun apply(target: Project) = with(target) {
+        with(pluginManager) {
+            apply("com.google.devtools.ksp")
+            apply("com.google.dagger.hilt.android")
+        }
+
+        dependencies {
+            add("implementation", libs.findLibrary("hilt-android").get())
+            add("ksp", libs.findLibrary("hilt-compiler").get())
+        }
+    }
+}

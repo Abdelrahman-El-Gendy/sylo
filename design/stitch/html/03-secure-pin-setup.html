@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sylo | Secure PIN Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Geist:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #101415;
+            color: #e0e3e5;
+            margin: 0;
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(30, 34, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .pin-dot {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pin-dot.filled {
+            background-color: #00f0ff;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+            transform: scale(1.2);
+        }
+        .keypad-button:active {
+            transform: scale(0.9);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .voice-glow {
+            box-shadow: 0px 8px 24px rgba(0, 240, 255, 0.3);
+        }
+        /* Custom toggle switch styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #00f0ff;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #00f0ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#1d2022",
+                        "on-background": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#45474a",
+                        "on-secondary-container": "#bbbbbf",
+                        "on-secondary-fixed": "#1a1c1f",
+                        "primary": "#dbfcff",
+                        "on-surface": "#e0e3e5",
+                        "surface-dim": "#101415",
+                        "on-secondary": "#2f3034",
+                        "on-primary-fixed-variant": "#004f54",
+                        "surface-container-high": "#272a2c",
+                        "on-primary": "#00363a",
+                        "background": "#101415",
+                        "primary-fixed": "#7df4ff",
+                        "on-tertiary-container": "#5b5f66",
+                        "surface-container-low": "#191c1e",
+                        "on-error": "#690005",
+                        "secondary-container": "#4a4b4f",
+                        "tertiary-fixed": "#dfe2eb",
+                        "on-tertiary": "#2d3137",
+                        "primary-container": "#00f0ff",
+                        "secondary-fixed": "#e2e2e6",
+                        "outline-variant": "#3b494b",
+                        "error": "#ffb4ab",
+                        "secondary": "#c6c6ca",
+                        "surface-container-highest": "#323537",
+                        "tertiary-container": "#d6d9e1",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c3c6ce",
+                        "on-primary-fixed": "#002022",
+                        "on-tertiary-fixed-variant": "#43474e",
+                        "inverse-on-surface": "#2d3133",
+                        "inverse-primary": "#006970",
+                        "on-surface-variant": "#b9cacb",
+                        "surface-variant": "#323537",
+                        "inverse-surface": "#e0e3e5",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#006970",
+                        "secondary-fixed-dim": "#c6c6ca",
+                        "primary-fixed-dim": "#00dbe9",
+                        "outline": "#849495",
+                        "surface-container-lowest": "#0b0f10",
+                        "on-tertiary-fixed": "#181c22",
+                        "surface-tint": "#00dbe9",
+                        "surface-bright": "#363a3b",
+                        "surface": "#101415",
+                        "tertiary": "#f3f5fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "gutter": "16px",
+                        "stack-lg": "32px",
+                        "section-gap": "48px",
+                        "unit": "4px",
+                        "container-margin": "24px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "label-mono": ["JetBrains Mono"],
+                        "display-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- Background Shader Overlay -->
+
+<!-- Header Section (Sylo Identity) -->
+<header class="fixed top-0 left-0 w-full z-40 flex justify-between items-center px-container-margin h-16 bg-surface/60 backdrop-blur-xl">
+<div class="font-headline-md text-headline-md font-bold text-primary-fixed-dim tracking-tight">Sylo</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-white/5 transition-colors p-2 rounded-full">close</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center relative z-10 px-container-margin pt-24 pb-12 overflow-y-auto">
+<!-- Instructional Content -->
+<div class="text-center mb-stack-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
+<h1 class="font-headline-lg text-headline-lg text-on-background mb-unit">Create your secure PIN</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs mx-auto">This PIN will be used to authorize transactions and secure your financial data.</p>
+</div>
+<!-- PIN Visualization -->
+<div class="flex gap-stack-md mb-section-gap justify-center items-center h-12">
+<div class="pin-dot w-4 h-4 rounded-full border-2 border-outline-variant" id="dot-0"></div>
+<div class="pin-dot w-4 h-4 rounded-full border-2 border-outline-variant" id="dot-1"></div>
+<div class="pin-dot w-4 h-4 rounded-full border-2 border-outline-variant" id="dot-2"></div>
+<div class="pin-dot w-4 h-4 rounded-full border-2 border-outline-variant" id="dot-3"></div>
+</div>
+<!-- Custom Numeric Keypad -->
+<div class="glass-card p-6 rounded-3xl w-full max-w-[320px] shadow-2xl">
+<div class="grid grid-cols-3 gap-stack-sm mb-stack-md">
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('1')">1</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('2')">2</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('3')">3</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('4')">4</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('5')">5</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('6')">6</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('7')">7</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('8')">8</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('9')">9</button>
+<div class="h-16 flex items-center justify-center"></div>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center font-headline-md text-headline-md text-on-surface hover:bg-white/5 transition-all" onclick="addNumber('0')">0</button>
+<button class="keypad-button h-16 rounded-2xl flex items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all" onclick="removeNumber()">
+<span class="material-symbols-outlined">backspace</span>
+</button>
+</div>
+<!-- Biometric Toggle -->
+<div class="flex items-center justify-between py-stack-sm border-t border-white/10 mt-unit">
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-label-sm text-label-sm text-on-surface">Enable Biometric Login</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer" for="biometric-toggle">
+<input class="sr-only peer" id="biometric-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</main>
+<!-- Footer Security Message -->
+<footer class="fixed bottom-0 left-0 w-full p-container-margin text-center z-20">
+<div class="flex items-center justify-center gap-unit text-on-secondary-container opacity-40">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-label-sm text-label-sm">End-to-end encrypted storage</span>
+</div>
+</footer>
+<!-- Interactive Logic -->
+<script>
+        let currentPin = "";
+        const maxPinLength = 4;
+
+        function addNumber(num) {
+            if (currentPin.length < maxPinLength) {
+                currentPin += num;
+                updateDots();
+                if (currentPin.length === maxPinLength) {
+                    validatePin();
+                }
+            }
+        }
+
+        function removeNumber() {
+            if (currentPin.length > 0) {
+                currentPin = currentPin.slice(0, -1);
+                updateDots();
+            }
+        }
+
+        function updateDots() {
+            for (let i = 0; i < maxPinLength; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i < currentPin.length) {
+                    dot.classList.add('filled');
+                    dot.classList.remove('border-outline-variant');
+                } else {
+                    dot.classList.remove('filled');
+                    dot.classList.add('border-outline-variant');
+                }
+            }
+        }
+
+        function validatePin() {
+            // Simulate processing
+            setTimeout(() => {
+                const mainContainer = document.querySelector('main');
+                // Brief visual feedback for success
+                document.querySelectorAll('.pin-dot').forEach(dot => {
+                    dot.style.backgroundColor = '#4ade80'; // Temporary success green
+                    dot.style.boxShadow = '0 0 20px rgba(74, 222, 128, 0.6)';
+                });
+
+                console.log("PIN Created:", currentPin);
+                
+                // Final state feedback (simulated navigation/completion)
+                setTimeout(() => {
+                    alert("PIN Setup Successfully");
+                    currentPin = "";
+                    updateDots();
+                }, 500);
+            }, 300);
+        }
+
+        // Haptic feel vibration for mobile
+        function triggerHaptic() {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(10);
+            }
+        }
+
+        document.querySelectorAll('.keypad-button').forEach(btn => {
+            btn.addEventListener('click', triggerHaptic);
+        });
+    </script>
+</body></html>

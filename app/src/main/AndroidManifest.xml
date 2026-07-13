@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- Used by :feature-voice for voice-based expense capture. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Interval-based bank-statement capture: reads the SMS inbox (content://sms)
+         via a WorkManager job. This is read-only polling, NOT a real-time
+         SMS_RECEIVED receiver, so no RECEIVE_SMS / exported receiver is needed. -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <!-- Posts a status-bar notification when an SMS expense is auto-captured. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".SyloApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Sylo"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Sylo"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|keyboardHidden"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Reads bank/wallet payment notifications to auto-record expenses.
+             The BIND permission ensures only the system can bind this service;
+             the user must still grant "Notification access" in system settings. -->
+        <service
+            android:name=".notifications.PaymentNotificationListenerService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Disable WorkManager's default on-demand initializer so Hilt can supply the
+             Configuration (with the HiltWorkerFactory) via SyloApplication. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+    </application>
+
+</manifest>

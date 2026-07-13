@@ -1,0 +1,118 @@
+{
+  "projectId": "9776402998627439360",
+  "exportedScreens": 16,
+  "screens": [
+    {
+      "index": "01",
+      "screenId": "482a3c7c76ff41cd8124190b5da04bb7",
+      "title": "Sylo | Profile",
+      "html": "html/01-profile.html",
+      "image": "images/01-profile.png"
+    },
+    {
+      "index": "02",
+      "screenId": "57746e8ce9ac4cb7abff8540cad82c1b",
+      "title": "Sylo - Add Expense",
+      "html": "html/02-sylo-add-expense.html",
+      "image": "images/02-sylo-add-expense.png"
+    },
+    {
+      "index": "03",
+      "screenId": "f2e7ade840c2460e8e4b37530676f36e",
+      "title": "f2e7ade840c2460e8e4b37530676f36e",
+      "html": "html/03-f2e7ade840c2460e8e4b37530676f36e.html",
+      "image": "images/03-f2e7ade840c2460e8e4b37530676f36e.png"
+    },
+    {
+      "index": "04",
+      "screenId": "ddda1a81394d40c79ffc5b51f1a32c1d",
+      "title": "ddda1a81394d40c79ffc5b51f1a32c1d",
+      "html": "html/04-ddda1a81394d40c79ffc5b51f1a32c1d.html",
+      "image": "images/04-ddda1a81394d40c79ffc5b51f1a32c1d.png"
+    },
+    {
+      "index": "05",
+      "screenId": "3249b54625134a6db9b06606f3a865f8",
+      "title": "Sylo | Secure PIN Setup",
+      "html": "html/05-secure-pin-setup.html",
+      "image": "images/05-secure-pin-setup.png"
+    },
+    {
+      "index": "06",
+      "screenId": "71853d3cddbf453991638d3ca51ca0e6",
+      "title": "Sylo - Smart Finance Assistant",
+      "html": "html/06-sylo-smart-finance-assistant.html",
+      "image": "images/06-sylo-smart-finance-assistant.png"
+    },
+    {
+      "index": "07",
+      "screenId": "75da8d8221714dc7824c45aed3467fdc",
+      "title": "Sylo - Settings",
+      "html": "html/07-sylo-settings.html",
+      "image": "images/07-sylo-settings.png"
+    },
+    {
+      "index": "08",
+      "screenId": "84d020a970b040229b70d39d3923870d",
+      "title": "Sylo - Intelligent Voice Finance",
+      "html": "html/08-sylo-intelligent-voice-finance.html",
+      "image": "images/08-sylo-intelligent-voice-finance.png"
+    },
+    {
+      "index": "09",
+      "screenId": "12844d25210d40b1af0d727d8b1844e0",
+      "title": "Sylo Analytics",
+      "html": "html/09-sylo-analytics.html",
+      "image": "images/09-sylo-analytics.png"
+    },
+    {
+      "index": "10",
+      "screenId": "aacd3ef18b3f4c49977fe91c6bf4e20b",
+      "title": "Sylo - Voice Review",
+      "html": "html/10-sylo-voice-review.html",
+      "image": "images/10-sylo-voice-review.png"
+    },
+    {
+      "index": "11",
+      "screenId": "80df9376caa943399830edc3456cd175",
+      "title": "Sylo - Financial Clarity Onboarding",
+      "html": "html/11-sylo-financial-clarity-onboarding.html",
+      "image": "images/11-sylo-financial-clarity-onboarding.png"
+    },
+    {
+      "index": "12",
+      "screenId": "2a2f6a7e96974caface035908ff6bae3",
+      "title": "Sylo - Full History",
+      "html": "html/12-sylo-full-history.html",
+      "image": "images/12-sylo-full-history.png"
+    },
+    {
+      "index": "13",
+      "screenId": "44258955b5ce4f7fa04d67d6c498f0fa",
+      "title": "44258955b5ce4f7fa04d67d6c498f0fa",
+      "html": "html/13-44258955b5ce4f7fa04d67d6c498f0fa.html",
+      "image": "images/13-44258955b5ce4f7fa04d67d6c498f0fa.png"
+    },
+    {
+      "index": "14",
+      "screenId": "7693113d61584260b01d894fa306bb0d",
+      "title": "Sylo - Transaction Detail",
+      "html": "html/14-sylo-transaction-detail.html",
+      "image": "images/14-sylo-transaction-detail.png"
+    },
+    {
+      "index": "15",
+      "screenId": "0233682695ee45719c9dab3c6c3c81d2",
+      "title": "Sylo Voice Capture",
+      "html": "html/15-sylo-voice-capture.html",
+      "image": "images/15-sylo-voice-capture.png"
+    },
+    {
+      "index": "16",
+      "screenId": "37634c78cbf04d2b89a7a75d37aa7093",
+      "title": "37634c78cbf04d2b89a7a75d37aa7093",
+      "html": "html/16-37634c78cbf04d2b89a7a75d37aa7093.html",
+      "image": "images/16-37634c78cbf04d2b89a7a75d37aa7093.png"
+    }
+  ]
+}

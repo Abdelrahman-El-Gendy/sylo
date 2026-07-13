@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sylo Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#b9cacb",
+                        "on-background": "#e0e3e5",
+                        "primary": "#dbfcff",
+                        "inverse-primary": "#006970",
+                        "tertiary-container": "#d6d9e1",
+                        "surface-dim": "#101415",
+                        "outline-variant": "#3b494b",
+                        "on-secondary-fixed-variant": "#45474a",
+                        "surface-container-lowest": "#0b0f10",
+                        "tertiary-fixed": "#dfe2eb",
+                        "surface-container-highest": "#323537",
+                        "on-tertiary-fixed-variant": "#43474e",
+                        "on-primary-fixed": "#002022",
+                        "on-tertiary-fixed": "#181c22",
+                        "tertiary-fixed-dim": "#c3c6ce",
+                        "on-primary-fixed-variant": "#004f54",
+                        "inverse-on-surface": "#2d3133",
+                        "primary-fixed-dim": "#00dbe9",
+                        "on-secondary-container": "#bbbbbf",
+                        "tertiary": "#f3f5fe",
+                        "outline": "#849495",
+                        "surface-container-low": "#191c1e",
+                        "primary-fixed": "#7df4ff",
+                        "error": "#ffb4ab",
+                        "surface": "#101415",
+                        "on-secondary": "#2f3034",
+                        "surface-tint": "#00dbe9",
+                        "secondary-fixed": "#e2e2e6",
+                        "on-primary-container": "#006970",
+                        "secondary-container": "#4a4b4f",
+                        "secondary-fixed-dim": "#c6c6ca",
+                        "surface-bright": "#363a3b",
+                        "surface-container": "#1d2022",
+                        "secondary": "#c6c6ca",
+                        "on-tertiary-container": "#5b5f66",
+                        "on-secondary-fixed": "#1a1c1f",
+                        "on-tertiary": "#2d3137",
+                        "surface-variant": "#323537",
+                        "on-surface": "#e0e3e5",
+                        "surface-container-high": "#272a2c",
+                        "on-primary": "#00363a",
+                        "inverse-surface": "#e0e3e5",
+                        "on-error": "#690005",
+                        "background": "#101415",
+                        "primary-container": "#00f0ff",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "32px",
+                        "unit": "4px",
+                        "stack-sm": "8px",
+                        "gutter": "16px",
+                        "section-gap": "48px",
+                        "container-margin": "24px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "display-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "headline-lg-mobile": ["Inter", "sans-serif"]
+                    },
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #101415;
+            color: #e0e3e5;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: rgba(30, 34, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .voice-glow {
+            box-shadow: 0px 8px 24px rgba(0, 240, 255, 0.3);
+        }
+        .area-chart-gradient {
+            fill: url(#chartGradient);
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-40 flex justify-between items-center px-container-margin h-16 bg-surface/60 backdrop-blur-xl">
+<div class="flex items-center gap-stack-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary-fixed/20">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a young entrepreneur in a minimalist office setting, soft dramatic lighting with cool blue rim light, high-end photography style consistent with a modern financial app aesthetic, deep charcoal background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzrWAU9zenk8JkzYSTfHGrMOCop_uok9Sfvq5RuRSA-ekOY1Zg74uVbDBNMPrVlwJTPTf1aN148i6JVnjMn_wnZ9oAEyDEl9o2xKuNqPnQFvc9Al7e2m3gali3cdB3QU_vCZO25KlM3E82oE8N5pQJx0EAfNEVqltwIny7u75Prfo8icuNylCfexGKu6N8kWJ0IYoTgoO7iPqF5JEwBMFqWrLx1xAuOU61yTrLRC0mUdHSxvFAo-0W"/>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary-fixed-dim tracking-tight">Sylo</span>
+</div>
+<button class="material-symbols-outlined text-primary-fixed-dim p-2 hover:bg-white/5 transition-colors rounded-full">notifications</button>
+</header>
+<main class="pt-20 pb-32 px-container-margin space-y-stack-lg">
+<!-- Header & Time Switcher -->
+<section class="space-y-stack-md">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background">Analytics</h1>
+<div class="flex p-1 bg-surface-container-low rounded-xl">
+<button class="flex-1 py-2 text-center font-label-sm text-label-sm rounded-lg bg-secondary-container text-on-surface">Week</button>
+<button class="flex-1 py-2 text-center font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">Month</button>
+<button class="flex-1 py-2 text-center font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">Year</button>
+</div>
+</section>
+<!-- Hero Area Chart -->
+<section class="glass-card rounded-2xl p-gutter relative overflow-hidden">
+<div class="flex justify-between items-start mb-stack-md">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Total Spending</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-primary-container">$1,248.60</p>
+</div>
+<div class="flex items-center text-[#4ade80] font-label-mono text-label-mono">
+<span class="material-symbols-outlined text-[18px]">trending_down</span>
+<span>4.2%</span>
+</div>
+</div>
+<div class="h-40 w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 100">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#00f0ff" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#00f0ff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path class="area-chart-gradient" d="M0,80 Q50,70 80,40 T150,50 T220,20 T300,60 T400,30 L400,100 L0,100 Z"></path>
+<path d="M0,80 Q50,70 80,40 T150,50 T220,20 T300,60 T400,30" fill="none" stroke="#00f0ff" stroke-linecap="round" stroke-width="2.5"></path>
+<circle cx="220" cy="20" fill="#00f0ff" r="4"></circle>
+<circle cx="220" cy="20" fill="#00f0ff" fill-opacity="0.2" r="8"></circle>
+</svg>
+</div>
+<div class="flex justify-between mt-stack-sm px-1">
+<span class="font-label-mono text-[10px] text-on-surface-variant opacity-50">MON</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant opacity-50">WED</span>
+<span class="font-label-mono text-[10px] text-primary-container font-bold">FRI</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant opacity-50">SUN</span>
+</div>
+</section>
+<!-- Budget vs Actual -->
+<section class="grid grid-cols-1 gap-gutter">
+<div class="glass-card rounded-2xl p-gutter space-y-stack-md border-l-4 border-l-primary-container">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-on-background">Monthly Budget</h3>
+<span class="font-label-mono text-label-mono text-on-surface-variant">62% Used</span>
+</div>
+<div class="relative h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-[62%] bg-gradient-to-r from-primary-container to-[#4ade80] rounded-full transition-all duration-1000 ease-out"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-on-surface">$1,550.00 <span class="text-on-surface-variant">spent</span></span>
+<span class="text-on-surface-variant">$950.00 left</span>
+</div>
+</div>
+</section>
+<!-- Spending Breakdown (Donut + List Hybrid) -->
+<section class="space-y-stack-md">
+<h3 class="font-headline-md text-headline-md text-on-background">Category Breakdown</h3>
+<div class="space-y-stack-sm">
+<!-- Food & Drink -->
+<div class="glass-card rounded-xl p-stack-md flex items-center justify-between">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container">restaurant</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Food &amp; Drink</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">42 Transactions</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-mono text-label-mono text-on-surface">$452.10</p>
+<p class="font-label-sm text-label-sm text-primary-container">36%</p>
+</div>
+</div>
+<!-- Transport -->
+<div class="glass-card rounded-xl p-stack-md flex items-center justify-between">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container">directions_car</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Transport</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">12 Transactions</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-mono text-label-mono text-on-surface">$210.45</p>
+<p class="font-label-sm text-label-sm text-primary-container">17%</p>
+</div>
+</div>
+<!-- Shopping -->
+<div class="glass-card rounded-xl p-stack-md flex items-center justify-between">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container">shopping_bag</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Shopping</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">8 Transactions</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-mono text-label-mono text-on-surface">$185.00</p>
+<p class="font-label-sm text-label-sm text-primary-container">15%</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Sylo Insights -->
+<section class="space-y-stack-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="font-headline-md text-headline-md text-on-background">Sylo Insights</h3>
+</div>
+<div class="flex gap-gutter overflow-x-auto pb-4 snap-x">
+<!-- Insight 1 -->
+<div class="flex-none w-72 glass-card rounded-2xl p-gutter snap-center bg-gradient-to-br from-primary-container/5 to-transparent border-primary-container/10">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">grocery</span>
+<span class="font-label-sm text-label-sm text-primary-container">Groceries</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-tight">You spent 15% more on groceries this week than your 3-month average.</p>
+<button class="mt-4 text-primary-container font-label-sm text-label-sm hover:underline">Show details</button>
+</div>
+<!-- Insight 2 -->
+<div class="flex-none w-72 glass-card rounded-2xl p-gutter snap-center">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">subscriptions</span>
+<span class="font-label-sm text-label-sm text-primary-container">Subscriptions</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-tight">Potential duplicate charge detected: 'CloudStorage Pro' ($9.99) billed twice today.</p>
+<button class="mt-4 text-primary-container font-label-sm text-label-sm hover:underline">Resolve now</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Voice FAB -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50">
+<button class="w-16 h-16 rounded-full bg-gradient-to-tr from-primary-container to-primary-fixed-dim voice-glow flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#002022] text-[32px]" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+<div class="absolute inset-0 w-16 h-16 rounded-full border-2 border-primary-container animate-pulse-slow pointer-events-none"></div>
+</div>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container/80 backdrop-blur-2xl border-t border-white/5 shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<div class="w-12"></div> <!-- Spacer for FAB -->
+<a class="flex flex-col items-center justify-center text-primary-fixed-dim font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insert_chart</span>
+<span class="font-label-sm text-label-sm">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-container opacity-60 hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for tab switching
+        const tabs = document.querySelectorAll('.flex.p-1 button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('bg-secondary-container', 'text-on-surface');
+                    t.classList.add('text-on-surface-variant');
+                });
+                tab.classList.remove('text-on-surface-variant');
+                tab.classList.add('bg-secondary-container', 'text-on-surface');
+            });
+        });
+    </script>
+</body></html>

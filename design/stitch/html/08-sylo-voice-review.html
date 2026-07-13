@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sylo - Voice Review</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2');
+            font-weight: 500;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-sans/Geist-SemiBold.woff2') format('woff2');
+            font-weight: 600;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-sans/Geist-Bold.woff2') format('woff2');
+            font-weight: 700;
+        }
+
+        body {
+            font-family: 'Geist', sans-serif;
+            background-color: #101415;
+            color: #e0e3e5;
+            overflow: hidden;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .glass-panel {
+            background: rgba(30, 34, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sylo-blue-glow {
+            box-shadow: 0px 8px 24px rgba(0, 240, 255, 0.3);
+        }
+
+        .voice-pulse {
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .sheet-enter {
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#1d2022",
+                        "on-background": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#45474a",
+                        "on-secondary-container": "#bbbbbf",
+                        "on-secondary-fixed": "#1a1c1f",
+                        "primary": "#dbfcff",
+                        "on-surface": "#e0e3e5",
+                        "surface-dim": "#101415",
+                        "on-secondary": "#2f3034",
+                        "on-primary-fixed-variant": "#004f54",
+                        "surface-container-high": "#272a2c",
+                        "on-primary": "#00363a",
+                        "background": "#101415",
+                        "primary-fixed": "#7df4ff",
+                        "on-tertiary-container": "#5b5f66",
+                        "surface-container-low": "#191c1e",
+                        "on-error": "#690005",
+                        "secondary-container": "#4a4b4f",
+                        "tertiary-fixed": "#dfe2eb",
+                        "on-tertiary": "#2d3137",
+                        "primary-container": "#00f0ff",
+                        "secondary-fixed": "#e2e2e6",
+                        "outline-variant": "#3b494b",
+                        "error": "#ffb4ab",
+                        "secondary": "#c6c6ca",
+                        "surface-container-highest": "#323537",
+                        "tertiary-container": "#d6d9e1",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c3c6ce",
+                        "on-primary-fixed": "#002022",
+                        "on-tertiary-fixed-variant": "#43474e",
+                        "inverse-on-surface": "#2d3133",
+                        "inverse-primary": "#006970",
+                        "on-surface-variant": "#b9cacb",
+                        "surface-variant": "#323537",
+                        "inverse-surface": "#e0e3e5",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#006970",
+                        "secondary-fixed-dim": "#c6c6ca",
+                        "primary-fixed-dim": "#00dbe9",
+                        "outline": "#849495",
+                        "surface-container-lowest": "#0b0f10",
+                        "on-tertiary-fixed": "#181c22",
+                        "surface-tint": "#00dbe9",
+                        "surface-bright": "#363a3b",
+                        "surface": "#101415",
+                        "tertiary": "#f3f5fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "gutter": "16px",
+                        "stack-lg": "32px",
+                        "section-gap": "48px",
+                        "unit": "4px",
+                        "container-margin": "24px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "label-mono": ["JetBrains Mono"],
+                        "display-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen relative overflow-hidden">
+<!-- Dashboard Background (Simulated) -->
+<header class="fixed top-0 left-0 w-full z-40 flex justify-between items-center px-container-margin h-16 bg-surface/60 backdrop-blur-xl">
+<div class="font-headline-md text-headline-md font-bold text-primary-fixed-dim tracking-tight">Sylo</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-white/5 rounded-full transition-colors cursor-pointer" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up studio portrait of a young entrepreneur, soft cinematic lighting, dark charcoal background, high contrast, minimalist aesthetic to match a luxury financial app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfwpoBefiVveqF9uK-hY9cYyFwDcchxRZbEN7itDszMrJR1zgH39t1Jk6djHgK5pdSS7m7pPipPjFhwCsodpmLhi3wHUL99o_SsaIDBVrE2zcCmRhajib4f2JtcNzXkHf3YU8PHFtCnZw_TtrybA_v-959Q4v0IN4BiPPTr3AritBwf1nbKPVsHPtHcwWz6qMoO5uTYzRqFE9G0DNJT2eRR8y2pzghaQIoyEge_v0Tvgu7MPFRnzXo"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-container-margin pb-32 space-y-stack-lg">
+<!-- Dashboard Summary Stats -->
+<div class="grid grid-cols-2 gap-stack-md">
+<div class="glass-panel p-stack-md rounded-xl space-y-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Monthly Spending</p>
+<h3 class="font-headline-md text-headline-md text-primary-fixed-dim">12,450 AED</h3>
+</div>
+<div class="glass-panel p-stack-md rounded-xl space-y-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Active Budgets</p>
+<h3 class="font-headline-md text-headline-md text-primary-fixed-dim">4/6</h3>
+</div>
+</div>
+<!-- Recent Transactions Skeleton -->
+<div class="space-y-stack-md opacity-40">
+<h2 class="font-headline-md text-headline-md">Recent Activity</h2>
+<div class="space-y-stack-sm">
+<div class="flex items-center justify-between p-stack-md rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary-fixed">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium">Apple Store</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Electronics</p>
+</div>
+</div>
+<p class="font-body-md text-body-md font-bold">-299.00</p>
+</div>
+<div class="flex items-center justify-between p-stack-md rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary-fixed">
+<span class="material-symbols-outlined">local_cafe</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium">Starbucks</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Dining</p>
+</div>
+</div>
+<p class="font-body-md text-body-md font-bold">-24.50</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Sheet Scrim Overlay -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300" id="scrim"></div>
+<!-- Voice Confirmation Bottom Sheet -->
+<div class="fixed bottom-0 left-0 w-full z-[60] sheet-enter" id="bottom-sheet">
+<div class="bg-surface-container dark:bg-surface-container rounded-t-[32px] px-container-margin pb-10 pt-4 shadow-2xl border-t border-white/5 max-w-2xl mx-auto">
+<!-- Handle -->
+<div class="w-12 h-1 bg-white/10 rounded-full mx-auto mb-8"></div>
+<div class="flex flex-col items-center text-center space-y-stack-md mb-stack-lg">
+<div class="voice-pulse w-12 h-12 rounded-full bg-primary-container sylo-blue-glow flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-on-primary-fixed text-2xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Review Transaction</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[280px]">I've captured your dining expense at the cafe. Is this correct?</p>
+</div>
+<!-- Review Card -->
+<div class="glass-panel rounded-2xl p-6 mb-stack-lg space-y-6">
+<div class="flex justify-between items-end border-b border-white/5 pb-4">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Amount</span>
+<div class="font-headline-lg text-headline-lg text-primary-fixed-dim">45.00 <span class="text-label-sm opacity-60">AED</span></div>
+</div>
+<div class="bg-primary/10 rounded-lg p-2">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="restaurant">restaurant</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-gutter">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Category</span>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary-fixed"></div>
+<span class="font-body-md text-body-md font-medium">Dining</span>
+</div>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Date</span>
+<div class="font-body-md text-body-md font-medium">Today, 2:14 PM</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-stack-sm">
+<button class="w-full h-14 bg-primary-container text-on-primary-container font-headline-md text-headline-md rounded-xl active:scale-95 transition-transform sylo-blue-glow flex items-center justify-center gap-2">
+                    Confirm &amp; Save
+                </button>
+<button class="w-full h-14 border border-outline-variant text-on-surface font-headline-md text-headline-md rounded-xl active:scale-95 transition-transform hover:bg-white/5">
+                    Edit Details
+                </button>
+</div>
+</div>
+</div>
+<!-- Hidden Nav for Desktop layout compatibility as per Shared Components -->
+<nav class="hidden md:flex fixed top-0 right-32 z-50 h-16 items-center gap-8">
+<a class="text-primary-fixed-dim font-bold font-label-sm text-label-sm" href="#">Home</a>
+<a class="text-on-secondary-container opacity-60 font-label-sm text-label-sm" href="#">History</a>
+<a class="text-on-secondary-container opacity-60 font-label-sm text-label-sm" href="#">Analytics</a>
+<a class="text-on-secondary-container opacity-60 font-label-sm text-label-sm" href="#">Settings</a>
+</nav>
+<!-- Bottom Nav (Suppressed because we are in a focused Task state) -->
+<!-- The logic mandate: Suppress navigation shell if page intent is Transactional or Success/Confirmation. -->
+<!-- We skip rendering the BottomNavBar component here to prioritize the Review Sheet content. -->
+<script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sheet = document.getElementById('bottom-sheet');
+                const scrim = document.getElementById('scrim');
+                
+                // Simulate dismissal
+                sheet.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                sheet.style.transform = 'translateY(110%)';
+                scrim.style.opacity = '0';
+                
+                setTimeout(() => {
+                    scrim.classList.add('hidden');
+                }, 400);
+            });
+        });
+
+        // Entrance animation orchestration
+        window.addEventListener('DOMContentLoaded', () => {
+            const sheet = document.getElementById('bottom-sheet');
+            const scrim = document.getElementById('scrim');
+            
+            scrim.style.opacity = '0';
+            setTimeout(() => {
+                scrim.style.transition = 'opacity 0.6s ease';
+                scrim.style.opacity = '1';
+            }, 10);
+        });
+    </script>
+</body></html>
