@@ -2,6 +2,7 @@ package com.sylo.feature.voice.speech
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -14,19 +15,6 @@ import kotlinx.coroutines.flow.update
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-
-/** Dictation language the user can pick for voice expense capture. */
-enum class VoiceLanguage(val languageTag: String, val label: String) {
-    ENGLISH("en-US", "EN"),
-    ARABIC("ar-SA", "AR"),
-    ;
-
-    companion object {
-        /** Arabic if the device's default locale is Arabic, English otherwise. */
-        fun systemDefault(): VoiceLanguage =
-            if (Locale.getDefault().language == "ar") ARABIC else ENGLISH
-    }
-}
 
 /**
  * Thin wrapper around Android's on-device [SpeechRecognizer]. Exposes recognition
@@ -53,7 +41,16 @@ class SpeechRecognizerManager @Inject constructor(
 
     private var recognizer: SpeechRecognizer? = null
 
-    fun startListening(languageTag: String = Locale.getDefault().toLanguageTag()) {
+    /**
+     * Starts capture with automatic language detection — the recognizer decides
+     * whether the speaker is using English or Arabic rather than us forcing one.
+     *
+     * On Android 14+ this uses the platform's on-device language-detection extras,
+     * constrained to the two languages [TranscriptParser] understands. On older
+     * devices (no detection API) it seeds with the device locale; either way the
+     * bilingual parser handles whichever transcript comes back.
+     */
+    fun startListening() {
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
             _state.update {
                 it.copy(available = false, isListening = false, error = "Speech recognition isn't available on this device.")
@@ -68,9 +65,20 @@ class SpeechRecognizerManager @Inject constructor(
 
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageTag)
+            // Seed with the device locale as the most-likely language...
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, Locale.getDefault().language)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+            // ...but on Android 14+ let the recognizer auto-detect the spoken
+            // language, restricted to the ones we can parse (English + Arabic).
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                putExtra(RecognizerIntent.EXTRA_ENABLE_LANGUAGE_DETECTION, true)
+                putStringArrayListExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_DETECTION_ALLOWED_LANGUAGES,
+                    arrayListOf("en-US", "ar"),
+                )
+            }
         }
         _state.update {
             it.copy(available = true, isListening = true, error = null, finalText = null, partialText = "")
