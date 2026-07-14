@@ -24,15 +24,7 @@ Thumbs.db
 *.log
 
 # --- IDE (Android Studio / IntelliJ) ---
-# Most of .idea is shared project config; only the noisy, per-machine,
-# or third-party-plugin state below is excluded.
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea/deploymentTargetSelector.xml
-/.idea/deviceManager.xml
-# Firebender's local AI chat history — not project config, churns every session.
-/.idea/firebender/
+/.idea/
+
+# --- Claude Code project config (skills, local session state) ---
+/.claude/
