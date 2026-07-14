@@ -5,22 +5,25 @@ import androidx.lifecycle.viewModelScope
 import com.sylo.core.database.TransactionRepository
 import com.sylo.core.database.UserPreferencesRepository
 import com.sylo.core.database.entity.TransactionEntity
+import com.sylo.feature.voice.speech.ParsedExpense
 import com.sylo.feature.voice.speech.SpeechRecognizerManager
 import com.sylo.feature.voice.speech.TranscriptParser
-import com.sylo.feature.voice.speech.VoiceLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class VoiceCaptureViewModel @Inject constructor(
     private val recognizer: SpeechRecognizerManager,
-    repository: TransactionRepository,
-    userPreferences: UserPreferencesRepository,
+    private val repository: TransactionRepository,
+    private val userPreferences: UserPreferencesRepository,
 ) : ViewModel() {
 
     val state: StateFlow<SpeechRecognizerManager.State> = recognizer.state
@@ -32,19 +35,17 @@ class VoiceCaptureViewModel @Inject constructor(
     val currency: StateFlow<String> = userPreferences.currency
         .stateIn(viewModelScope, SharingStarted.Eagerly, UserPreferencesRepository.DEFAULT_CURRENCY)
 
-    /** Dictation language, defaulting to the device locale; user can override per-recording. */
-    private val _language = MutableStateFlow(VoiceLanguage.systemDefault())
-    val language: StateFlow<VoiceLanguage> = _language.asStateFlow()
+    private val _saving = MutableStateFlow(false)
+    val saving: StateFlow<Boolean> = _saving.asStateFlow()
 
-    fun setLanguage(language: VoiceLanguage) {
-        _language.value = language
-    }
-
-    /** Begins capturing while the mic is held, in the currently selected [VoiceLanguage]. */
-    fun startListening() = recognizer.startListening(_language.value.languageTag)
+    /** Begins capturing while the mic is held; the recognizer auto-detects the language. */
+    fun startListening() = recognizer.startListening()
 
     /** Stops capturing on release; the recognizer then delivers its final result. */
     fun stopListening() = recognizer.stopListening()
+
+    /** Drops the last result and returns to idle so the user can record again. */
+    fun discard() = recognizer.reset()
 
     /** The best text we have so far (final result if present, otherwise the live partial). */
     fun currentTranscript(): String {
@@ -52,11 +53,44 @@ class VoiceCaptureViewModel @Inject constructor(
         return s.finalText?.takeIf { it.isNotBlank() } ?: s.partialText
     }
 
+    private fun parsed(): ParsedExpense = TranscriptParser.parse(currentTranscript())
+
     /** Live guess of the category, shown under the transcript. */
-    fun currentCategory(): String = TranscriptParser.parse(currentTranscript()).category
+    fun currentCategory(): String = parsed().category
 
     /** Live guess of the amount, shown as a preview. */
-    fun currentAmount(): String = TranscriptParser.parse(currentTranscript()).amountDisplay
+    fun currentAmount(): String = parsed().amountDisplay
+
+    /** Only a positive amount can be saved; "hello" with no number must not persist. */
+    fun canSubmit(): Boolean = parsed().amountMinor > 0L
+
+    /**
+     * Persists the recognized expense in the account currency, then invokes [onSaved].
+     * No-op while already saving or when no amount was detected.
+     */
+    fun submit(onSaved: () -> Unit) {
+        val p = parsed()
+        if (_saving.value || p.amountMinor <= 0L) return
+        _saving.value = true
+        viewModelScope.launch {
+            val cur = currency.value.ifBlank { userPreferences.currency.first() }
+            repository.add(
+                TransactionEntity(
+                    id = UUID.randomUUID().toString(),
+                    title = p.note.ifBlank { "Voice expense" },
+                    amountMinor = -p.amountMinor, // spoken expenses are outflows
+                    currency = cur,
+                    category = p.category,
+                    note = p.note,
+                    status = "Approved",
+                    timestampEpochMillis = System.currentTimeMillis(),
+                ),
+            )
+            _saving.value = false
+            recognizer.reset()
+            onSaved()
+        }
+    }
 
     override fun onCleared() {
         recognizer.destroy()
