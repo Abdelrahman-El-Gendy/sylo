@@ -196,8 +196,8 @@ private fun MainFlow(
             onEdit = { showAddExpense = true },
         )
         voiceEntries(
-            onCaptured = { transcript -> navigator.navigate(VoiceReviewRoute(transcript)) },
-            onCancel = { navigator.exitFlowToHome(DashboardRoute) },
+            onSaved = { navigator.exitFlowToHome(DashboardRoute) },
+            onEdit = { transcript -> navigator.navigate(VoiceReviewRoute(transcript)) },
             onConfirmSave = { navigator.exitFlowToHome(DashboardRoute) },
             onEditDetails = { showAddExpense = true },
         )

@@ -91,6 +91,13 @@ class SpeechRecognizerManager @Inject constructor(
         _state.update { it.copy(isListening = false) }
     }
 
+    /** Clears the last result so the UI can return to the idle "hold to speak" state. */
+    fun reset() {
+        _state.update {
+            it.copy(isListening = false, partialText = "", finalText = null, error = null, rms = 0f)
+        }
+    }
+
     fun destroy() {
         recognizer?.destroy()
         recognizer = null
