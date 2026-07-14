@@ -1,39 +1,38 @@
+# --- Gradle / Kotlin build output ---
 *.iml
 .gradle
+.kotlin
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+*.hprof
+
+# --- Local machine config (never shared, may contain machine-specific paths) ---
 /local.properties
+
+# --- Signing / secrets (never commit release-signing material) ---
+*.jks
+*.keystore
+key.properties
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+
+# --- IDE (Android Studio / IntelliJ) ---
+# Most of .idea is shared project config; only the noisy, per-machine,
+# or third-party-plugin state below is excluded.
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-
-# Project exclude paths
-/build-logic/convention/build/
-/build-logic/convention/build/classes/kotlin/main/
-/core/core-common/build/
-/core/core-common/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/core/core-database/build/
-/core/core-database/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/core/core-navigation/build/
-/core/core-network/build/
-/core/core-network/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/core/core-security/build/
-/core/core-security/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/core/core-ui/build/
-/feature/feature-auth/build/
-/feature/feature-auth/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/feature/feature-dashboard/build/
-/feature/feature-dashboard/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/feature/feature-settings/build/
-/feature/feature-settings/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/feature/feature-transactions/build/
-/feature/feature-transactions/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
-/feature/feature-voice/build/
-/feature/feature-voice/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
+/.idea/deploymentTargetSelector.xml
+/.idea/deviceManager.xml
+# Firebender's local AI chat history — not project config, churns every session.
+/.idea/firebender/
