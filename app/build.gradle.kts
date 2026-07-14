@@ -102,6 +102,11 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
 
+    // Home-screen widget: Glance composes the widget UI with Compose-like APIs,
+    // rendered through RemoteViews under the hood.
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
+
     // Dagger/Hilt generated code references these annotations at compile time.
     compileOnly(libs.error.prone.annotations)
 

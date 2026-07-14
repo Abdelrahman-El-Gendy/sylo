@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+  <!-- Sylo adaptive app icon, 108dp grid. Coin sits inside the 66dp safe zone.
+       Foreground group (coin + S) maps to ic_launcher_foreground;
+       the flat #101415 rect maps to ic_launcher_background;
+       the bare S path (stroke only, any single color) maps to the monochrome layer. -->
+  <rect width="108" height="108" fill="#101415"/>
+  <g transform="translate(24,24) scale(0.6)">
+    <circle cx="50" cy="50" r="44" fill="#00DBE9"/>
+    <path d="M 62.12 29 A 14 14 0 1 0 50 50 A 14 14 0 1 1 37.88 71"
+          fill="none" stroke="#101415" stroke-width="11" stroke-linecap="round"/>
+  </g>
+</svg>

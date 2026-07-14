@@ -1,5 +1,8 @@
 package com.sylo.feature.auth.ui
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -155,11 +161,20 @@ private fun PinUnlockScreen(
         )
 
         Spacer(Modifier.size(SyloSpacing.stackLg))
-        PinDots(filled = uiState.enteredDigits, total = PIN_LENGTH)
+        PinDots(filled = uiState.enteredDigits, total = PIN_LENGTH, isError = uiState.error != null)
         // Fixed-height slot so showing/clearing the error never shifts the layout.
         Box(modifier = Modifier.height(32.dp), contentAlignment = Alignment.Center) {
-            uiState.error?.let {
-                Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+            // Keep the last message around so the exit fade doesn't show an empty label.
+            var lastError by remember { mutableStateOf("") }
+            uiState.error?.let { lastError = it }
+            // Fully qualified: inside Box-within-Column, plain AnimatedVisibility resolves
+            // to the ColumnScope extension, which can't be called on the Box receiver.
+            androidx.compose.animation.AnimatedVisibility(
+                visible = uiState.error != null,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { -it / 2 }),
+                exit = fadeOut(),
+            ) {
+                Text(lastError, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
             }
         }
 

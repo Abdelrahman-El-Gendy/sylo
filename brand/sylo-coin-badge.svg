@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Sylo coin badge — cyan coin, S cut as a slot (painted in the ground color).
+       For true transparency, boolean-subtract the S stroke from the circle in a vector editor. -->
+  <circle cx="50" cy="50" r="44" fill="#00DBE9"/>
+  <path d="M 62.12 29 A 14 14 0 1 0 50 50 A 14 14 0 1 1 37.88 71"
+        fill="none" stroke="#101415" stroke-width="11" stroke-linecap="round"/>
+</svg>

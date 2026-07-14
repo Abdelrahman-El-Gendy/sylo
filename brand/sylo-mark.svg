@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Sylo mark — the "S-slot". Two 240° arcs (r14, tangent at center), stroke 11, round caps.
+       Single color: use #00DBE9 on dark grounds, #00363A on light grounds, or currentColor. -->
+  <path d="M 62.12 29 A 14 14 0 1 0 50 50 A 14 14 0 1 1 37.88 71"
+        fill="none" stroke="#00DBE9" stroke-width="11" stroke-linecap="round"/>
+</svg>

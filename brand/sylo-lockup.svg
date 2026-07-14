@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 100">
+  <!-- Sylo horizontal lockup — coin badge + wordmark, optically centered on the coin. -->
+  <circle cx="50" cy="50" r="44" fill="#00DBE9"/>
+  <path d="M 62.12 29 A 14 14 0 1 0 50 50 A 14 14 0 1 1 37.88 71"
+        fill="none" stroke="#101415" stroke-width="11" stroke-linecap="round"/>
+  <g transform="translate(124,27) scale(1.28)" fill="none" stroke="#E0E3E5" stroke-width="8" stroke-linecap="round">
+    <path d="M 21.79 4.5 A 9 9 0 1 0 14 18 A 9 9 0 1 1 6.21 31.5"/>
+    <g transform="translate(38.6,0)">
+      <path d="M 0 0 L 0 22 A 10 10 0 0 0 10 32 L 18 32"/>
+      <path d="M 18 0 L 18 44 A 10 10 0 0 1 8 54"/>
+    </g>
+    <path d="M 73.6 -12 L 73.6 36"/>
+    <circle cx="108.6" cy="18" r="18"/>
+  </g>
+</svg>
