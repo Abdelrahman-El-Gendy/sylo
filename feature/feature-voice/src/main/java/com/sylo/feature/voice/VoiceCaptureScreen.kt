@@ -104,6 +104,7 @@ fun VoiceCaptureRoute(
         category = category,
         insight = insight,
         level = level,
+        detectedLanguage = state.detectedLanguage,
         onHoldStart = {
             if (hasPermission) viewModel.startListening()
             else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -136,6 +137,7 @@ private fun VoiceCaptureScreen(
     category: String?,
     insight: String?,
     level: Float,
+    detectedLanguage: String?,
     onHoldStart: () -> Unit,
     onHoldEnd: () -> Unit,
 ) {
@@ -148,7 +150,12 @@ private fun VoiceCaptureScreen(
         SyloTopBar()
 
         Spacer(Modifier.weight(0.2f))
-        StatusPill(isListening = isListening, error = error, available = available)
+        StatusPill(
+            isListening = isListening,
+            error = error,
+            available = available,
+            detectedLanguage = detectedLanguage,
+        )
 
         Spacer(Modifier.height(SyloSpacing.stackLg))
         // Static waveform silhouette; the cyan fill rises/falls with the voice level.
@@ -244,10 +251,19 @@ private fun MicRing(
 }
 
 @Composable
-private fun StatusPill(isListening: Boolean, error: String?, available: Boolean, modifier: Modifier = Modifier) {
+private fun StatusPill(
+    isListening: Boolean,
+    error: String?,
+    available: Boolean,
+    detectedLanguage: String? = null,
+    modifier: Modifier = Modifier,
+) {
+    // e.g. "ar-SA" -> "AR", shown while the engine has identified the spoken language.
+    val langBadge = detectedLanguage?.substringBefore('-')?.uppercase()
     val (label, dot) = when {
         error != null -> error.uppercase() to MaterialTheme.colorScheme.error
         !available -> "UNAVAILABLE" to MaterialTheme.colorScheme.error
+        isListening && langBadge != null -> "LISTENING ($langBadge)..." to SyloBrandCyan
         isListening -> "LISTENING..." to SyloBrandCyan
         else -> "HOLD TO SPEAK" to MaterialTheme.colorScheme.onSurfaceVariant
     }
