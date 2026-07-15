@@ -105,7 +105,9 @@ fun PinUnlockRoute(
         showBiometric = showBiometric,
         onDigit = { digit ->
             viewModel.onDigit(digit)
-            if (viewModel.uiState.value.isComplete && viewModel.verifyUnlock()) onUnlocked()
+            // Verification is async (PBKDF2 on a background thread) so the 4th dot
+            // gets its frame to render before any navigation happens.
+            if (viewModel.uiState.value.isComplete) viewModel.submitUnlock(onUnlocked)
         },
         onBackspace = viewModel::onBackspace,
         onBiometric = ::tryBiometric,
@@ -155,13 +157,18 @@ private fun PinUnlockScreen(
         Text("Welcome Back", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.size(SyloSpacing.stackSm))
         Text(
-            "Enter PIN to unlock Sylo",
+            if (uiState.isVerifying) "Verifying…" else "Enter PIN to unlock Sylo",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(Modifier.size(SyloSpacing.stackLg))
-        PinDots(filled = uiState.enteredDigits, total = PIN_LENGTH, isError = uiState.error != null)
+        PinDots(
+            filled = uiState.enteredDigits,
+            total = PIN_LENGTH,
+            isError = uiState.error != null,
+            isVerifying = uiState.isVerifying,
+        )
         // Fixed-height slot so showing/clearing the error never shifts the layout.
         Box(modifier = Modifier.height(32.dp), contentAlignment = Alignment.Center) {
             // Keep the last message around so the exit fade doesn't show an empty label.
@@ -179,7 +186,7 @@ private fun PinUnlockScreen(
         }
 
         Spacer(Modifier.weight(0.6f))
-        PinKeypad(onDigit = onDigit, onBackspace = onBackspace)
+        PinKeypad(onDigit = onDigit, onBackspace = onBackspace, enabled = !uiState.isVerifying)
 
         Spacer(Modifier.size(SyloSpacing.stackMd))
         if (showBiometric) {

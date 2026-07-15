@@ -66,7 +66,9 @@ fun PinSetupRoute(
         uiState = uiState,
         onDigit = { digit ->
             viewModel.onDigit(digit)
-            if (viewModel.uiState.value.isComplete && viewModel.confirmSetup()) finishSetup()
+            // Hashing is async (PBKDF2 on a background thread) so the 4th dot gets
+            // its frame to render before the flow moves on.
+            if (viewModel.uiState.value.isComplete) viewModel.submitSetup(::finishSetup)
         },
         onBackspace = viewModel::onBackspace,
         onToggleBiometric = viewModel::toggleBiometric,
@@ -114,7 +116,7 @@ private fun PinSetupScreen(
         )
 
         Spacer(Modifier.size(SyloSpacing.stackLg))
-        PinDots(filled = uiState.enteredDigits, total = PIN_LENGTH)
+        PinDots(filled = uiState.enteredDigits, total = PIN_LENGTH, isVerifying = uiState.isVerifying)
 
         Spacer(Modifier.weight(1f))
         Surface(
@@ -123,7 +125,7 @@ private fun PinSetupScreen(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(modifier = Modifier.padding(SyloSpacing.stackMd)) {
-                PinKeypad(onDigit = onDigit, onBackspace = onBackspace)
+                PinKeypad(onDigit = onDigit, onBackspace = onBackspace, enabled = !uiState.isVerifying)
                 Spacer(Modifier.size(SyloSpacing.stackMd))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
