@@ -2,10 +2,15 @@ package com.sylo.feature.auth.ui.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,7 +47,9 @@ import androidx.compose.ui.unit.dp
 /**
  * The row of PIN progress dots shown above the keypad. Each dot's fill pops in/out
  * with a spring as digits are entered; when [isError] flips on (wrong PIN), the row
- * shakes horizontally with a haptic tick and the dots flash the error color.
+ * shakes horizontally with a haptic tick and the dots flash the error color. While
+ * [isVerifying] the filled dots pulse gently so the async hash check reads as
+ * deliberate progress rather than a hang.
  */
 @Composable
 fun PinDots(
@@ -50,6 +57,7 @@ fun PinDots(
     total: Int,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
+    isVerifying: Boolean = false,
 ) {
     val shake = remember { Animatable(0f) }
     val haptics = LocalHapticFeedback.current
@@ -81,6 +89,18 @@ fun PinDots(
         label = "pinDotRing",
     )
 
+    // Gentle breathing applied to filled dots while the hash check runs.
+    val pulseTransition = rememberInfiniteTransition(label = "pinVerifyPulse")
+    val pulse by pulseTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (isVerifying) 1.25f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 380),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "pinVerifyPulseScale",
+    )
+
     Row(
         modifier = modifier.graphicsLayer { translationX = shake.value },
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -101,8 +121,9 @@ fun PinDots(
                     Modifier
                         .size(12.dp)
                         .graphicsLayer {
-                            scaleX = fill
-                            scaleY = fill
+                            val scale = fill * (if (isVerifying) pulse else 1f)
+                            scaleX = scale
+                            scaleY = scale
                             alpha = fill.coerceIn(0f, 1f)
                         }
                         .background(fillColor, CircleShape),
@@ -112,12 +133,17 @@ fun PinDots(
     }
 }
 
-/** Numeric PIN keypad (1–9, 0, backspace) matching the Stitch auth screens. */
+/**
+ * Numeric PIN keypad (1–9, 0, backspace) matching the Stitch auth screens.
+ * While [enabled] is false (e.g. during async PIN verification) the pad dims
+ * and ignores input, so stray taps can't queue up mid-check.
+ */
 @Composable
 fun PinKeypad(
     onDigit: (Char) -> Unit,
     onBackspace: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val rows = listOf(
         listOf('1', '2', '3'),
@@ -125,8 +151,14 @@ fun PinKeypad(
         listOf('7', '8', '9'),
         listOf(' ', '0', '\b'),
     )
+    val padAlpha by animateFloatAsState(
+        targetValue = if (enabled) 1f else 0.45f,
+        label = "keypadAlpha",
+    )
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .graphicsLayer { alpha = padAlpha },
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         rows.forEach { row ->
@@ -138,14 +170,14 @@ fun PinKeypad(
                     Box(modifier = Modifier.weight(1f)) {
                         when (c) {
                             ' ' -> Spacer()
-                            '\b' -> KeypadCell(onClick = onBackspace) {
+                            '\b' -> KeypadCell(enabled = enabled, onClick = onBackspace) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.Backspace,
                                     contentDescription = "Delete",
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            else -> KeypadCell(onClick = { onDigit(c) }) {
+                            else -> KeypadCell(enabled = enabled, onClick = { onDigit(c) }) {
                                 Text(
                                     text = c.toString(),
                                     style = MaterialTheme.typography.headlineMedium,
@@ -170,6 +202,7 @@ private fun Spacer() {
 @Composable
 private fun KeypadCell(
     onClick: () -> Unit,
+    enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -194,6 +227,7 @@ private fun KeypadCell(
             .clickable(
                 interactionSource = interactionSource,
                 indication = LocalIndication.current,
+                enabled = enabled,
                 onClick = onClick,
             ),
         contentAlignment = Alignment.Center,
