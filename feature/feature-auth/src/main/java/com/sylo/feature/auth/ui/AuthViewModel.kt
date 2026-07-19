@@ -4,7 +4,6 @@ import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sylo.core.security.biometric.BiometricAuthenticator
-import com.sylo.core.security.biometric.BiometricAvailability
 import com.sylo.core.security.biometric.BiometricPreferences
 import com.sylo.core.security.crypto.BiometricCryptoManager
 import com.sylo.core.security.crypto.CryptoKeyManager
@@ -56,14 +55,14 @@ class AuthViewModel @Inject constructor(
 
     fun hasPin(): Boolean = pinManager.hasPin()
 
-    /** True only when there's a PIN, the user opted in, and the device can actually authenticate. */
+    /** True only when there's a PIN, the user opted in, and biometric is offerable. */
     fun canOfferBiometric(): Boolean =
         hasPin() && biometricPreferences.isEnabled() &&
-            biometricAuthenticator.canAuthenticate() == BiometricAvailability.AVAILABLE
+            biometricAuthenticator.canAuthenticate().usable
 
-    /** Whether biometric hardware is usable (for enabling the toggle during setup). */
+    /** Whether biometric can be offered (for enabling the toggle during setup). */
     fun biometricHardwareAvailable(): Boolean =
-        biometricAuthenticator.canAuthenticate() == BiometricAvailability.AVAILABLE
+        biometricAuthenticator.canAuthenticate().usable
 
     fun onDigit(digit: Char) {
         if (_uiState.value.isVerifying || pin.length >= PIN_LENGTH) return
@@ -140,9 +139,13 @@ class AuthViewModel @Inject constructor(
     /**
      * If the just-created setup opted into biometrics and the DB isn't bound yet,
      * returns an ENCRYPT cipher to authenticate before wrapping the passphrase.
+     *
+     * Requires a STRONG (Class 3) biometric — only that can back a Keystore
+     * CryptoObject. On weak-only devices this returns null, so binding is skipped
+     * and biometric acts as a plain unlock gate (the DB key stays Keystore-protected).
      */
     fun encryptCipherForBinding(): Cipher? =
-        if (_uiState.value.biometricEnabled && biometricHardwareAvailable() && !biometricCryptoManager.isBound()) {
+        if (_uiState.value.biometricEnabled && biometricAuthenticator.hasStrongBiometric() && !biometricCryptoManager.isBound()) {
             biometricCryptoManager.encryptCipher()
         } else {
             null

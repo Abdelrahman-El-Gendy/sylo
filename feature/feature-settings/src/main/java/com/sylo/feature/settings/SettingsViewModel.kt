@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.sylo.core.database.TransactionRepository
 import com.sylo.core.database.UserPreferencesRepository
 import com.sylo.core.security.biometric.BiometricAuthenticator
-import com.sylo.core.security.biometric.BiometricAvailability
 import com.sylo.core.security.biometric.BiometricPreferences
 import com.sylo.core.security.crypto.BiometricCryptoManager
 import com.sylo.core.security.identity.VerifiedEmailManager
@@ -51,7 +50,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     val biometricAvailable: Boolean
-        get() = biometricAuthenticator.canAuthenticate() == BiometricAvailability.AVAILABLE
+        get() = biometricAuthenticator.canAuthenticate().usable
 
     private val _uiState = MutableStateFlow(
         SettingsUiState(

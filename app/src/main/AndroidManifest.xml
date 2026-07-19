@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- Legacy fingerprint API (FingerprintManagerCompat) used as a fallback on
+         API 28–29 OEM devices where BiometricManager returns STATUS_UNKNOWN. -->
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <!-- Used by :feature-voice for voice-based expense capture. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Interval-based bank-statement capture: reads the SMS inbox (content://sms)
