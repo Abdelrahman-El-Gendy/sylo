@@ -56,7 +56,7 @@ class BankSmsScanWorker @AssistedInject constructor(
                 ?: continue
 
             val signedMinor = if (parsed.isIncome) parsed.amountMinor else -parsed.amountMinor
-            transactionRepository.add(
+            val stored = transactionRepository.addCapturedIfNew(
                 TransactionEntity(
                     // Deterministic id derived from the message itself: if two scans race
                     // (e.g. the periodic's first run + the immediate one-shot) or a later
@@ -71,7 +71,14 @@ class BankSmsScanWorker @AssistedInject constructor(
                     status = "SMS",
                     timestampEpochMillis = sms.dateMillis,
                 ),
+                dedupeWindowMillis = CAPTURE_DEDUPE_WINDOW_MS,
             )
+            if (!stored) {
+                // Already captured through another channel (e.g. the real-time
+                // notification listener saw this SMS's notification first).
+                Timber.tag("BankSmsCapture").i("Skipped duplicate %s %d from %s", parsed.currency, signedMinor, sms.address)
+                continue
+            }
             capturedCount++
             latestSummary = summarize(signedMinor, parsed.currency, parsed.merchant)
             Timber.tag("BankSmsCapture").i("Captured %s %d from %s", parsed.currency, signedMinor, sms.address)
@@ -94,4 +101,9 @@ class BankSmsScanWorker @AssistedInject constructor(
     /** Stable per-message id so repeated scans of the same SMS never duplicate an expense. */
     private fun smsTransactionId(sms: InboxSms): String =
         "sms-${sms.dateMillis}-${sms.body.hashCode()}"
+
+    private companion object {
+        /** Mirrors the notification listener's window — see its companion for rationale. */
+        const val CAPTURE_DEDUPE_WINDOW_MS = 3 * 60 * 60 * 1000L
+    }
 }

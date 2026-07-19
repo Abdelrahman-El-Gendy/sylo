@@ -9,13 +9,13 @@ import com.sylo.feature.voice.VoiceReviewRoute as VoiceReviewScreenRoute
 
 /** The voice capture flow: capture (hold-to-talk) -> review (carries the recognized text). */
 fun EntryProviderScope<NavKey>.voiceEntries(
-    onCaptured: (String) -> Unit,
-    onCancel: () -> Unit,
+    onSaved: () -> Unit,
+    onEdit: (String) -> Unit,
     onConfirmSave: () -> Unit,
     onEditDetails: () -> Unit,
 ) {
     entry<VoiceCaptureRoute> {
-        VoiceCaptureScreenRoute(onConfirm = onCaptured, onCancel = onCancel)
+        VoiceCaptureScreenRoute(onSaved = onSaved, onEdit = onEdit)
     }
     entry<VoiceReviewRoute> { key ->
         VoiceReviewScreenRoute(

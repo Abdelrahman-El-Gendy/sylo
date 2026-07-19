@@ -1,6 +1,8 @@
 package com.sylo.feature.auth.ui
 
+import android.os.SystemClock
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sylo.core.security.biometric.BiometricAuthenticator
 import com.sylo.core.security.biometric.BiometricAvailability
 import com.sylo.core.security.biometric.BiometricPreferences
@@ -9,10 +11,14 @@ import com.sylo.core.security.crypto.CryptoKeyManager
 import com.sylo.core.security.crypto.SessionKeyHolder
 import com.sylo.core.security.pin.PinManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.crypto.Cipher
 import javax.inject.Inject
 
@@ -20,6 +26,8 @@ data class AuthUiState(
     val enteredDigits: Int = 0,
     val biometricEnabled: Boolean = false,
     val error: String? = null,
+    /** True while the PIN hash is computed/verified off the main thread. */
+    val isVerifying: Boolean = false,
 ) {
     val isComplete: Boolean get() = enteredDigits == PIN_LENGTH
 }
@@ -58,39 +66,68 @@ class AuthViewModel @Inject constructor(
         biometricAuthenticator.canAuthenticate() == BiometricAvailability.AVAILABLE
 
     fun onDigit(digit: Char) {
-        if (pin.length >= PIN_LENGTH) return
+        if (_uiState.value.isVerifying || pin.length >= PIN_LENGTH) return
         pin.append(digit)
         syncDots()
     }
 
     fun onBackspace() {
-        if (pin.isEmpty()) return
+        if (_uiState.value.isVerifying || pin.isEmpty()) return
         pin.deleteCharAt(pin.length - 1)
         syncDots()
     }
 
     fun toggleBiometric() = _uiState.update { it.copy(biometricEnabled = !it.biometricEnabled) }
 
-    /** Persist a freshly-created PIN + the biometric preference. Returns false if incomplete. */
-    fun confirmSetup(): Boolean {
-        if (pin.length != PIN_LENGTH) return false
-        pinManager.setPin(pin.toString())
-        biometricPreferences.setEnabled(_uiState.value.biometricEnabled && biometricHardwareAvailable())
-        reset()
-        return true
+    /**
+     * Persist a freshly-created PIN + the biometric preference, then invoke [onDone].
+     *
+     * PBKDF2 (120k iterations) runs on a background dispatcher: hashing synchronously
+     * inside the 4th key's click handler used to freeze the frame before the last dot
+     * could render. [MIN_VERIFY_MILLIS] keeps the verifying state on screen long
+     * enough for the dot-fill animation to complete instead of hard-cutting away.
+     */
+    fun submitSetup(onDone: () -> Unit) {
+        if (pin.length != PIN_LENGTH || _uiState.value.isVerifying) return
+        val candidate = pin.toString()
+        _uiState.update { it.copy(isVerifying = true, error = null) }
+        viewModelScope.launch {
+            val started = SystemClock.uptimeMillis()
+            withContext(Dispatchers.Default) {
+                pinManager.setPin(candidate)
+                biometricPreferences.setEnabled(_uiState.value.biometricEnabled && biometricHardwareAvailable())
+            }
+            awaitMinDuration(started)
+            reset()
+            onDone()
+        }
     }
 
-    /** Verify an entered PIN against the stored hash. */
-    fun verifyUnlock(): Boolean {
-        if (pin.length != PIN_LENGTH) return false
-        val ok = pinManager.verifyPin(pin.toString())
-        if (ok) {
-            reset()
-        } else {
-            pin.clear()
-            _uiState.update { it.copy(enteredDigits = 0, error = "Incorrect PIN. Try again.") }
+    /** Verify an entered PIN against the stored hash (async, same rationale as [submitSetup]). */
+    fun submitUnlock(onUnlocked: () -> Unit) {
+        if (pin.length != PIN_LENGTH || _uiState.value.isVerifying) return
+        val candidate = pin.toString()
+        _uiState.update { it.copy(isVerifying = true, error = null) }
+        viewModelScope.launch {
+            val started = SystemClock.uptimeMillis()
+            val ok = withContext(Dispatchers.Default) { pinManager.verifyPin(candidate) }
+            awaitMinDuration(started)
+            if (ok) {
+                reset()
+                onUnlocked()
+            } else {
+                pin.clear()
+                _uiState.update {
+                    it.copy(enteredDigits = 0, isVerifying = false, error = "Incorrect PIN. Try again.")
+                }
+            }
         }
-        return ok
+    }
+
+    /** Keeps the verifying state visible for at least [MIN_VERIFY_MILLIS]. */
+    private suspend fun awaitMinDuration(startedUptimeMillis: Long) {
+        val elapsed = SystemClock.uptimeMillis() - startedUptimeMillis
+        if (elapsed < MIN_VERIFY_MILLIS) delay(MIN_VERIFY_MILLIS - elapsed)
     }
 
     fun showBiometricError(message: String) = _uiState.update { it.copy(error = message) }
@@ -129,8 +166,17 @@ class AuthViewModel @Inject constructor(
 
     private fun reset() {
         pin.clear()
-        _uiState.update { it.copy(enteredDigits = 0, error = null) }
+        _uiState.update { it.copy(enteredDigits = 0, error = null, isVerifying = false) }
     }
 
     private fun syncDots() = _uiState.update { it.copy(enteredDigits = pin.length, error = null) }
+
+    private companion object {
+        /**
+         * Floor for how long the verifying state stays visible. The dot-fill spring
+         * needs ~250ms; anything shorter reads as a glitch, anything much longer
+         * feels sluggish.
+         */
+        const val MIN_VERIFY_MILLIS = 350L
+    }
 }

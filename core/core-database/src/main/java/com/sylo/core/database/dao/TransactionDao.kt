@@ -19,6 +19,32 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(transaction: TransactionEntity)
 
+    /**
+     * Whether an auto-captured row (notification listener or SMS scan) with the same
+     * signed amount and currency already exists at/after [sinceMillis]. Both capture
+     * paths consult this before inserting, so the same real-world payment seen through
+     * different channels (two SMS apps' notifications, listener + interval scan)
+     * lands only once. [excludeId] lets the SMS worker re-upsert its own row.
+     */
+    @Query(
+        """
+        SELECT EXISTS(
+            SELECT 1 FROM transactions
+            WHERE status IN ('Auto', 'SMS')
+              AND amountMinor = :amountMinor
+              AND currency = :currency
+              AND timestampEpochMillis >= :sinceMillis
+              AND id != :excludeId
+        )
+        """,
+    )
+    suspend fun hasCapturedPaymentSince(
+        amountMinor: Long,
+        currency: String,
+        sinceMillis: Long,
+        excludeId: String,
+    ): Boolean
+
     @Query("DELETE FROM transactions WHERE id = :id")
     suspend fun deleteById(id: String)
 }

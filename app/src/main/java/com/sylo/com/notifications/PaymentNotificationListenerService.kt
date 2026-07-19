@@ -45,23 +45,33 @@ class PaymentNotificationListenerService : NotificationListenerService() {
 
         val parsed = PaymentNotificationParser.parse(pkg, title, text) ?: return
 
-        val key = "$pkg|${parsed.amountMinor}|${parsed.rawText}"
+        // Content-based key, deliberately EXCLUDING the posting package and title:
+        // with two SMS apps installed, each posts its own notification for the same
+        // bank SMS (different package, different sender label) — a package-scoped
+        // key let the same payment through twice.
+        val signedMinor = if (parsed.isIncome) parsed.amountMinor else -parsed.amountMinor
+        val key = "$signedMinor|${parsed.currency}"
         if (isDuplicate(key)) return
 
-        Timber.tag("PaymentCapture").i("Captured %s %d from %s", parsed.currency, parsed.amountMinor, pkg)
         scope.launch {
-            repository.add(
+            val stored = repository.addCapturedIfNew(
                 TransactionEntity(
                     id = UUID.randomUUID().toString(),
                     title = parsed.merchant,
-                    amountMinor = if (parsed.isIncome) parsed.amountMinor else -parsed.amountMinor,
+                    amountMinor = signedMinor,
                     currency = parsed.currency,
                     category = parsed.category,
                     note = "${parsed.sourceApp}: ${parsed.rawText}",
                     status = "Auto",
                     timestampEpochMillis = System.currentTimeMillis(),
-                )
+                ),
+                dedupeWindowMillis = CAPTURE_DEDUPE_WINDOW_MS,
             )
+            if (stored) {
+                Timber.tag("PaymentCapture").i("Captured %s %d from %s", parsed.currency, parsed.amountMinor, pkg)
+            } else {
+                Timber.tag("PaymentCapture").i("Skipped duplicate %s %d from %s", parsed.currency, parsed.amountMinor, pkg)
+            }
         }
     }
 
@@ -82,5 +92,12 @@ class PaymentNotificationListenerService : NotificationListenerService() {
     private companion object {
         const val DEDUPE_WINDOW_MS = 60_000L
         const val MAX_RECENT = 50
+
+        /**
+         * DB-level dedup window shared with the SMS scan worker: long enough that a
+         * payment first seen here is still recognized when the 30-minute interval
+         * scan re-reads the same SMS from the inbox.
+         */
+        const val CAPTURE_DEDUPE_WINDOW_MS = 3 * 60 * 60 * 1000L
     }
 }

@@ -39,6 +39,16 @@ object PaymentNotificationParser {
     )
     private val incomeKeywords = listOf("received", "credited", "credit", "refund", "deposit", "salary")
 
+    /**
+     * Messages that describe settling/paying off a card or bill between the user's own
+     * accounts. The purchases they cover were already captured individually, so
+     * recording the settlement too would double-count the same spend.
+     * ("settl" covers settle / settled / settlement / settling.)
+     */
+    private val transferKeywords = listOf(
+        "settl", "credit card bill", "card bill", "installment", "instalment", "repayment",
+    )
+
     private val categoryKeywords = mapOf(
         "Groceries" to listOf("carrefour", "grocery", "market", "spinneys", "supermarket"),
         "Transport" to listOf("uber", "careem", "fuel", "petrol", "taxi", "metro"),
@@ -65,6 +75,10 @@ object PaymentNotificationParser {
         val content = listOfNotNull(title, text).joinToString(" ").trim()
         if (content.isBlank()) return null
         val lower = content.lowercase()
+
+        // Card/bill settlements are transfers between the user's own accounts,
+        // not new spending — skip them entirely.
+        if (transferKeywords.any { lower.contains(it) }) return null
 
         val match = amountRegex.find(content) ?: return null
 
