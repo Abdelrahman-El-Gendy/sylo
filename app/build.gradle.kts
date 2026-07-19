@@ -1,8 +1,22 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.sylo.android.application)
     alias(libs.plugins.sylo.android.compose)
     alias(libs.plugins.sylo.android.hilt)
     alias(libs.plugins.kotlin.serialization)
+}
+
+// Release signing is supplied via a git-ignored key.properties at the repo root:
+//   storeFile=/absolute/or/relative/path/to/sylo-release.jks
+//   storePassword=...
+//   keyAlias=...
+//   keyPassword=...
+// When the file is absent (local verification, CI without secrets) the release
+// build falls back to the debug keystore so prodRelease stays installable.
+val keystorePropertiesFile: File = rootProject.file("key.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) keystorePropertiesFile.inputStream().use { load(it) }
 }
 
 android {
@@ -52,6 +66,17 @@ android {
         }
     }
 
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -63,6 +88,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
