@@ -34,6 +34,7 @@ class UserPreferencesRepository @Inject constructor(
     private val balanceConfiguredKey = booleanPreferencesKey("balance_configured")
     private val smsAutoCaptureEnabledKey = booleanPreferencesKey("sms_auto_capture_enabled")
     private val smsLastProcessedMillisKey = longPreferencesKey("sms_last_processed_millis")
+    private val voiceLanguageKey = stringPreferencesKey("voice_language")
 
     private val prefs: Flow<androidx.datastore.preferences.core.Preferences> =
         context.userPreferencesStore.data.catch { if (it is IOException) emit(emptyPreferences()) else throw it }
@@ -68,6 +69,12 @@ class UserPreferencesRepository @Inject constructor(
      * rescan only processes messages that arrived since the last run — no duplicates.
      */
     val smsLastProcessedMillis: Flow<Long> = prefs.map { it[smsLastProcessedMillisKey] ?: 0L }
+
+    /**
+     * Persisted voice-capture dictation language (a [com.sylo.feature.voice] VoiceLanguage
+     * enum name, or "AUTO"). Remembered so a manual override sticks across recordings.
+     */
+    val voiceLanguage: Flow<String> = prefs.map { it[voiceLanguageKey] ?: DEFAULT_VOICE_LANGUAGE }
 
     suspend fun setOpeningBalance(amountMinor: Long) {
         context.userPreferencesStore.edit { it[openingBalanceKey] = amountMinor }
@@ -109,9 +116,14 @@ class UserPreferencesRepository @Inject constructor(
         context.userPreferencesStore.edit { it[smsLastProcessedMillisKey] = millis }
     }
 
+    suspend fun setVoiceLanguage(value: String) {
+        context.userPreferencesStore.edit { it[voiceLanguageKey] = value }
+    }
+
     companion object {
         const val DEFAULT_CURRENCY = "USD"
         const val DEFAULT_NAME = "Sylo User"
+        const val DEFAULT_VOICE_LANGUAGE = "AUTO"
         val CURRENCIES = listOf("USD", "EUR", "GBP", "EGP", "AED", "SAR", "INR", "JPY")
     }
 }

@@ -8,12 +8,14 @@ import com.sylo.core.database.entity.TransactionEntity
 import com.sylo.feature.voice.speech.ParsedExpense
 import com.sylo.feature.voice.speech.SpeechRecognizerManager
 import com.sylo.feature.voice.speech.TranscriptParser
+import com.sylo.feature.voice.speech.VoiceLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -38,8 +40,18 @@ class VoiceCaptureViewModel @Inject constructor(
     private val _saving = MutableStateFlow(false)
     val saving: StateFlow<Boolean> = _saving.asStateFlow()
 
-    /** Begins capturing while the mic is held; the recognizer auto-detects the language. */
-    fun startListening() = recognizer.startListening()
+    /** Selected dictation language (persisted); AUTO asks the platform to detect it. */
+    val language: StateFlow<VoiceLanguage> = userPreferences.voiceLanguage
+        .map { VoiceLanguage.fromKeyOrDefault(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, VoiceLanguage.AUTO)
+
+    /** Persist a language override (or AUTO) so it sticks across recordings. */
+    fun setLanguage(value: VoiceLanguage) {
+        viewModelScope.launch { userPreferences.setVoiceLanguage(value.name) }
+    }
+
+    /** Begins capturing while the mic is held, in the selected [language]. */
+    fun startListening() = recognizer.startListening(language.value)
 
     /** Stops capturing on release; the recognizer then delivers its final result. */
     fun stopListening() = recognizer.stopListening()

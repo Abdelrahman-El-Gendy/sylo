@@ -8,7 +8,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +40,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +64,7 @@ import com.sylo.core.ui.component.SyloTopBar
 import com.sylo.core.ui.component.currencySymbol
 import com.sylo.core.ui.theme.SyloBrandCyan
 import com.sylo.core.ui.theme.SyloSpacing
+import com.sylo.feature.voice.speech.VoiceLanguage
 import kotlin.math.abs
 
 @Composable
@@ -73,6 +77,7 @@ fun VoiceCaptureRoute(
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
     val currency by viewModel.currency.collectAsStateWithLifecycle()
     val saving by viewModel.saving.collectAsStateWithLifecycle()
+    val language by viewModel.language.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var hasPermission by remember {
@@ -105,6 +110,8 @@ fun VoiceCaptureRoute(
         insight = insight,
         level = level,
         detectedLanguage = state.detectedLanguage,
+        language = language,
+        onLanguageChange = viewModel::setLanguage,
         onHoldStart = {
             if (hasPermission) viewModel.startListening()
             else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -138,6 +145,8 @@ private fun VoiceCaptureScreen(
     insight: String?,
     level: Float,
     detectedLanguage: String?,
+    language: VoiceLanguage,
+    onLanguageChange: (VoiceLanguage) -> Unit,
     onHoldStart: () -> Unit,
     onHoldEnd: () -> Unit,
 ) {
@@ -148,6 +157,14 @@ private fun VoiceCaptureScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         SyloTopBar()
+
+        Spacer(Modifier.height(SyloSpacing.stackMd))
+        // Auto by default; pick a language when auto-detection can't handle it.
+        LanguageChips(
+            selected = language,
+            enabled = !isListening,
+            onSelect = onLanguageChange,
+        )
 
         Spacer(Modifier.weight(0.2f))
         StatusPill(
@@ -246,6 +263,51 @@ private fun MicRing(
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(40.dp),
             )
+        }
+    }
+}
+
+/**
+ * Compact, horizontally-scrollable language selector. "Auto" asks the platform to
+ * detect the spoken language; the rest force a specific one for devices where auto
+ * isn't supported. Disabled mid-recording. The choice is remembered by the ViewModel.
+ */
+@Composable
+private fun LanguageChips(
+    selected: VoiceLanguage,
+    enabled: Boolean,
+    onSelect: (VoiceLanguage) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        VoiceLanguage.entries.forEach { option ->
+            val isSelected = option == selected
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(
+                        if (isSelected) SyloBrandCyan else MaterialTheme.colorScheme.surfaceContainerHigh,
+                    )
+                    .then(if (enabled) Modifier.clickable { onSelect(option) } else Modifier)
+                    .padding(horizontal = 14.dp, vertical = 7.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    option.label,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            }
         }
     }
 }

@@ -17,20 +17,42 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Thin wrapper around Android's [SpeechRecognizer]. Exposes recognition
- * progress as a [StateFlow] the UI/ViewModel can observe.
+ * Dictation language for voice capture. [AUTO] asks the platform to identify the
+ * spoken language; the rest pin a specific one. A specific choice is the reliable
+ * escape hatch when auto-detection isn't supported on the device (see
+ * [SpeechRecognizerManager]).
+ */
+enum class VoiceLanguage(val tag: String?, val label: String) {
+    AUTO(null, "Auto"),
+    ENGLISH("en-US", "EN"),
+    ARABIC("ar-SA", "AR"),
+    FRENCH("fr-FR", "FR"),
+    GERMAN("de-DE", "DE"),
+    SPANISH("es-ES", "ES"),
+    ;
+
+    companion object {
+        fun fromKeyOrDefault(key: String?): VoiceLanguage =
+            entries.firstOrNull { it.name == key } ?: AUTO
+    }
+}
+
+/**
+ * Thin wrapper around Android's [SpeechRecognizer]. Exposes recognition progress as
+ * a [StateFlow] the UI/ViewModel can observe.
  *
- * Language handling: the platform's automatic language identification
- * (EXTRA_ENABLE_LANGUAGE_DETECTION / EXTRA_ENABLE_LANGUAGE_SWITCH) is honored only
- * by the ON-DEVICE recognizer on Android 14+, so when that engine is available we
- * use it with detection + mid-session switching enabled and no language pinned —
- * the recognizer identifies whatever language is spoken (Arabic, German, …) and
- * switches to it. On devices without on-device recognition (or below Android 14)
- * the platform offers no auto-detection at all, so we fall back to the default
- * recognizer pinned to the device locale.
+ * Language handling — the platform gives us two engines with very different abilities:
  *
- * SpeechRecognizer must be created and driven on the MAIN thread, so every public
- * method here is expected to be called from the main dispatcher (ViewModel does so).
+ * - **[VoiceLanguage.AUTO]**: real automatic language identification exists only on
+ *   the ON-DEVICE recognizer (Android 14+), so we use it with detection + mid-session
+ *   switching and no language pinned. It's frequently unavailable or only has the
+ *   English pack installed, which is why a specific language is offered as a fallback.
+ * - **A specific [VoiceLanguage]**: we use the DEFAULT (Google) recognizer pinned to
+ *   that BCP-47 tag. This is the dependable path — Google's recognizer transcribes
+ *   Arabic, German, French, … accurately when told which one to expect.
+ *
+ * The active engine is swapped automatically when the requested mode needs the other
+ * one. SpeechRecognizer must be created and driven on the MAIN thread.
  */
 @Singleton
 class SpeechRecognizerManager @Inject constructor(
@@ -43,7 +65,7 @@ class SpeechRecognizerManager @Inject constructor(
         val finalText: String? = null,
         val rms: Float = 0f,
         val error: String? = null,
-        /** BCP-47 tag of the language the recognizer identified, when supported. */
+        /** BCP-47 tag the recognizer identified in AUTO mode, when supported. */
         val detectedLanguage: String? = null,
     )
 
@@ -52,45 +74,65 @@ class SpeechRecognizerManager @Inject constructor(
 
     private var recognizer: SpeechRecognizer? = null
 
-    /** True when the API 34+ on-device engine (the one that supports detection) is in use. */
+    /** True when the currently-created recognizer is the API 34+ on-device engine. */
     private var usingOnDeviceEngine = false
 
     /**
-     * Set when the on-device engine turned out to have no usable language model
-     * (ERROR_LANGUAGE_UNAVAILABLE / NOT_SUPPORTED) — from then on we stick to the
-     * default service, which at least recognizes the device locale.
+     * Set once the on-device engine reports it has no usable language model
+     * (ERROR_LANGUAGE_*). From then on AUTO stops trying it and uses the default
+     * engine, so we don't keep hitting the same dead end.
      */
     private var onDeviceEngineUnusable = false
 
-    fun startListening() {
+    /** The language the in-flight session was started with (for error-restarts). */
+    private var currentLanguage: VoiceLanguage = VoiceLanguage.AUTO
+
+    fun startListening(language: VoiceLanguage) {
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
             _state.update {
                 it.copy(available = false, isListening = false, error = "Speech recognition isn't available on this device.")
             }
             return
         }
+        currentLanguage = language
 
-        val sr = recognizer ?: createBestRecognizer().also {
-            it.setRecognitionListener(listener)
-            recognizer = it
+        // AUTO uses the on-device detector when we can; a specific language uses the
+        // default (cloud) recognizer, which reliably transcribes the chosen language.
+        val useOnDevice = language == VoiceLanguage.AUTO &&
+            !onDeviceEngineUnusable &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
+
+        // (Re)create the recognizer only when the required engine changes.
+        if (recognizer == null || usingOnDeviceEngine != useOnDevice) {
+            recognizer?.destroy()
+            recognizer = createRecognizer(useOnDevice).also { it.setRecognitionListener(listener) }
+            usingOnDeviceEngine = useOnDevice
         }
 
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-            if (usingOnDeviceEngine && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                // Do NOT pin EXTRA_LANGUAGE here — that would bias every utterance
-                // toward one language. Let the engine identify the spoken language
-                // (unconstrained) and switch to it mid-session.
-                putExtra(RecognizerIntent.EXTRA_ENABLE_LANGUAGE_DETECTION, true)
-                putExtra(
-                    RecognizerIntent.EXTRA_ENABLE_LANGUAGE_SWITCH,
-                    RecognizerIntent.LANGUAGE_SWITCH_BALANCED,
-                )
-            } else {
-                // No platform auto-detection available: best effort is the device locale.
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
+            when {
+                useOnDevice -> {
+                    // Let the engine identify the spoken language (unconstrained) and
+                    // switch to it — do NOT pin EXTRA_LANGUAGE.
+                    putExtra(RecognizerIntent.EXTRA_ENABLE_LANGUAGE_DETECTION, true)
+                    putExtra(
+                        RecognizerIntent.EXTRA_ENABLE_LANGUAGE_SWITCH,
+                        RecognizerIntent.LANGUAGE_SWITCH_BALANCED,
+                    )
+                }
+                language.tag != null -> {
+                    // Reliable path: transcribe the explicitly chosen language.
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, language.tag)
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, language.tag)
+                }
+                else -> {
+                    // AUTO but no on-device detection: fall back to the user's Google
+                    // voice-input default rather than force the device locale.
+                }
             }
         }
         _state.update {
@@ -99,22 +141,13 @@ class SpeechRecognizerManager @Inject constructor(
                 finalText = null, partialText = "", detectedLanguage = null,
             )
         }
-        sr.startListening(intent)
+        recognizer?.startListening(intent)
     }
 
-    /**
-     * Prefers the on-device engine on Android 14+ because it is the only one that
-     * honors the language-detection/switch extras; otherwise the default service.
-     */
-    private fun createBestRecognizer(): SpeechRecognizer =
-        if (!onDeviceEngineUnusable &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-            SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
-        ) {
-            usingOnDeviceEngine = true
+    private fun createRecognizer(onDevice: Boolean): SpeechRecognizer =
+        if (onDevice) {
             SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
         } else {
-            usingOnDeviceEngine = false
             SpeechRecognizer.createSpeechRecognizer(context)
         }
 
@@ -161,8 +194,7 @@ class SpeechRecognizerManager @Inject constructor(
             }
         }
 
-        // Fired by the on-device engine (API 34+) whenever it identifies the spoken
-        // language — surfaced so the UI can show what was detected.
+        // Fired by the on-device engine (API 34+) when it identifies the language.
         override fun onLanguageDetection(results: Bundle) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 results.getString(SpeechRecognizer.DETECTED_LANGUAGE)?.let { tag ->
@@ -175,15 +207,15 @@ class SpeechRecognizerManager @Inject constructor(
             val missingModel = error == SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE ||
                 error == SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED
             if (missingModel && usingOnDeviceEngine) {
-                // The on-device engine exists but has no language model installed.
-                // Fall back to the default service permanently; if the user is still
-                // holding the mic, restart the session on it seamlessly.
+                // On-device auto-detect has no model installed: give up on it and
+                // retry the same request on the default engine (which, for AUTO,
+                // uses the user's voice-input default instead of erroring).
                 onDeviceEngineUnusable = true
                 recognizer?.destroy()
                 recognizer = null
                 usingOnDeviceEngine = false
                 if (_state.value.isListening) {
-                    startListening()
+                    startListening(currentLanguage)
                     return
                 }
             }
@@ -199,12 +231,12 @@ class SpeechRecognizerManager @Inject constructor(
         SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Microphone permission denied"
         SpeechRecognizer.ERROR_NETWORK -> "Network error"
         SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout"
-        SpeechRecognizer.ERROR_NO_MATCH -> "Didn't catch that — try again"
+        SpeechRecognizer.ERROR_NO_MATCH -> "Didn't catch that — try again, or pick a language"
         SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Recognizer busy"
         SpeechRecognizer.ERROR_SERVER -> "Server error"
         SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "No speech detected"
-        SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED -> "That language pack isn't installed on this device"
-        SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE -> "Language model unavailable — check speech language packs"
+        SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED -> "Auto didn't work — pick a language"
+        SpeechRecognizer.ERROR_LANGUAGE_UNAVAILABLE -> "Auto didn't work — pick a language"
         else -> "Recognition error ($code)"
     }
 }
