@@ -1,7 +1,13 @@
 package com.sylo.feature.voice
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
@@ -57,6 +63,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sylo.core.database.entity.TransactionEntity
 import com.sylo.core.ui.component.SyloPrimaryButton
@@ -79,15 +86,44 @@ fun VoiceCaptureRoute(
     val saving by viewModel.saving.collectAsStateWithLifecycle()
     val language by viewModel.language.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val activity = remember(context) { context.findActivity() }
 
-    var hasPermission by remember {
-        mutableStateOf(
-            context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED,
-        )
+    fun micGranted() =
+        context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
+    var hasPermission by remember { mutableStateOf(micGranted()) }
+    // True once the OS will no longer show the request dialog ("Don't ask again" /
+    // permanently denied). In that state re-requesting silently no-ops, so we must
+    // send the user to app settings instead of doing nothing.
+    var permanentlyDenied by remember { mutableStateOf(false) }
+
+    // Re-check when returning to the screen (e.g. after enabling mic in Settings).
+    LifecycleResumeEffect(Unit) {
+        hasPermission = micGranted()
+        if (hasPermission) permanentlyDenied = false
+        onPauseOrDispose { }
     }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
-    ) { granted -> hasPermission = granted }
+    ) { granted ->
+        hasPermission = granted
+        if (!granted && activity != null &&
+            !activity.shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)
+        ) {
+            // The dialog won't appear again — take the user straight to app settings.
+            permanentlyDenied = true
+            context.openAppSettings()
+        }
+    }
+
+    fun requestMic() {
+        when {
+            hasPermission -> viewModel.startListening()
+            permanentlyDenied -> context.openAppSettings()
+            else -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
 
     // Live text (partial while speaking); the final result gates the review sheet.
     val liveText = state.finalText?.takeIf { it.isNotBlank() } ?: state.partialText
@@ -105,18 +141,19 @@ fun VoiceCaptureRoute(
         transcript = liveText,
         isListening = state.isListening,
         available = state.available && hasPermission,
-        error = if (!hasPermission) "Microphone permission is required" else state.error,
+        error = when {
+            hasPermission -> state.error
+            permanentlyDenied -> "Tap the mic to enable it in Settings"
+            else -> "Tap the mic to allow microphone access"
+        },
         category = category,
         insight = insight,
         level = level,
         detectedLanguage = state.detectedLanguage,
         language = language,
         onLanguageChange = viewModel::setLanguage,
-        onHoldStart = {
-            if (hasPermission) viewModel.startListening()
-            else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        },
-        onHoldEnd = { viewModel.stopListening() },
+        onHoldStart = { requestMic() },
+        onHoldEnd = { if (hasPermission) viewModel.stopListening() },
     )
 
     // Once a recording is captured, review it in a bottom sheet: submit or edit.
@@ -183,10 +220,10 @@ private fun VoiceCaptureScreen(
         )
 
         Spacer(Modifier.height(SyloSpacing.stackLg))
-        // The mic ring is the press-and-hold target (no animation).
+        // The mic ring is the press-and-hold target (no animation). Always pressable
+        // so a denied mic permission can be requested rather than silently ignored.
         MicRing(
             isListening = isListening,
-            enabled = available,
             onHoldStart = onHoldStart,
             onHoldEnd = onHoldEnd,
         )
@@ -219,11 +256,17 @@ private fun VoiceCaptureScreen(
     }
 }
 
-/** The concentric ring + press-and-hold mic. Holding records; releasing ends capture. */
+/**
+ * The concentric ring + press-and-hold mic. Holding records; releasing ends capture.
+ *
+ * The press gesture is ALWAYS attached — even when recording isn't yet available
+ * (e.g. the mic permission is denied) — so [onHoldStart] can request the permission
+ * or route to Settings. Gating the gesture on availability is what made the mic
+ * inert (and "nothing happened") when permission was missing.
+ */
 @Composable
 private fun MicRing(
     isListening: Boolean,
-    enabled: Boolean,
     onHoldStart: () -> Unit,
     onHoldEnd: () -> Unit,
 ) {
@@ -244,16 +287,14 @@ private fun MicRing(
                 .background(
                     Brush.radialGradient(listOf(SyloBrandCyan, SyloBrandCyan.copy(alpha = 0.55f))),
                 )
-                .pointerInput(enabled) {
-                    if (enabled) {
-                        detectTapGestures(
-                            onPress = {
-                                onHoldStart()
-                                tryAwaitRelease()
-                                onHoldEnd()
-                            },
-                        )
-                    }
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            onHoldStart()
+                            tryAwaitRelease()
+                            onHoldEnd()
+                        },
+                    )
                 },
             contentAlignment = Alignment.Center,
         ) {
@@ -554,4 +595,22 @@ private fun categoryIcon(category: String?): ImageVector = when (category) {
     "Entertainment" -> Icons.Filled.Movie
     "Bills" -> Icons.AutoMirrored.Filled.ReceiptLong
     else -> Icons.Filled.Payments
+}
+
+/** Unwraps the hosting [Activity] from a Compose [Context], or null if not found. */
+private fun Context.findActivity(): Activity? {
+    var ctx: Context? = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
+}
+
+/** Opens this app's system settings page (for granting a permanently-denied permission). */
+private fun Context.openAppSettings() {
+    startActivity(
+        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+    )
 }
