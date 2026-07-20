@@ -23,11 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sylo.core.security.biometric.BiometricCipherResult
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SyloLogo
 import com.sylo.core.ui.theme.SyloBrandCyan
 import com.sylo.core.ui.theme.SyloSpacing
@@ -42,6 +44,8 @@ fun PinSetupRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val bindTitle = stringResource(R.string.bio_bind_title)
+    val bindSubtitle = stringResource(R.string.bio_bind_subtitle)
 
     // After the PIN is stored, optionally wrap the DB key to a biometric CryptoObject.
     fun finishSetup() {
@@ -50,8 +54,8 @@ fun PinSetupRoute(
         if (cipher != null && activity != null) {
             viewModel.biometricAuthenticator.authenticate(
                 activity = activity,
-                title = "Enable biometric unlock",
-                subtitle = "Bind your encrypted data to your fingerprint",
+                title = bindTitle,
+                subtitle = bindSubtitle,
                 cipher = cipher,
             ) { result ->
                 if (result is BiometricCipherResult.Success) viewModel.completeBinding(result.cipher)
@@ -97,19 +101,19 @@ private fun PinSetupScreen(
         ) {
             SyloLogo()
             IconButton(onClick = onClose) {
-                Icon(Icons.Filled.Close, contentDescription = "Close")
+                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.common_close))
             }
         }
 
         Spacer(Modifier.size(SyloSpacing.stackLg))
         Text(
-            "Create your secure PIN",
+            stringResource(R.string.pin_create_title),
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.size(SyloSpacing.stackSm))
         Text(
-            "This PIN will be used to authorize transactions and secure your financial data.",
+            stringResource(R.string.pin_create_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -138,7 +142,7 @@ private fun PinSetupScreen(
                     )
                     Spacer(Modifier.size(SyloSpacing.stackSm))
                     Text(
-                        "Enable Biometric Login",
+                        stringResource(R.string.pin_enable_biometric),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.weight(1f),
                     )
@@ -160,7 +164,7 @@ private fun PinSetupScreen(
             )
             Spacer(Modifier.size(SyloSpacing.unit))
             Text(
-                "End-to-end encrypted storage",
+                stringResource(R.string.pin_e2e_storage),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

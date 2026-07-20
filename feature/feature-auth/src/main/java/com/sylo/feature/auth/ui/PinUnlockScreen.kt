@@ -31,12 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sylo.core.security.biometric.BiometricCipherResult
 import com.sylo.core.security.biometric.BiometricResult
+import com.sylo.core.ui.R
 import com.sylo.core.ui.theme.SyloBrandCyan
 import com.sylo.core.ui.theme.SyloSpacing
 import com.sylo.feature.auth.ui.component.PinDots
@@ -50,6 +52,9 @@ fun PinUnlockRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val bioTitle = stringResource(R.string.bio_unlock_title)
+    val bioSubtitleDecrypt = stringResource(R.string.bio_unlock_subtitle_decrypt)
+    val bioSubtitle = stringResource(R.string.bio_unlock_subtitle)
 
     // First launch (no PIN yet) -> send the user to create one.
     androidx.compose.runtime.LaunchedEffect(Unit) {
@@ -63,8 +68,8 @@ fun PinUnlockRoute(
             // DB key is biometric-bound: unlock via CryptoObject and release the key.
             viewModel.biometricAuthenticator.authenticate(
                 activity = activity,
-                title = "Unlock Sylo",
-                subtitle = "Confirm your identity to decrypt your data",
+                title = bioTitle,
+                subtitle = bioSubtitleDecrypt,
                 cipher = decryptCipher,
             ) { result ->
                 when (result) {
@@ -79,8 +84,8 @@ fun PinUnlockRoute(
         } else {
             viewModel.biometricAuthenticator.authenticate(
                 activity = activity,
-                title = "Unlock Sylo",
-                subtitle = "Confirm your identity to unlock",
+                title = bioTitle,
+                subtitle = bioSubtitle,
             ) { result ->
                 when (result) {
                     is BiometricResult.Success -> onUnlocked()
@@ -154,10 +159,10 @@ private fun PinUnlockScreen(
         }
 
         Spacer(Modifier.size(SyloSpacing.stackLg))
-        Text("Welcome Back", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.unlock_welcome), style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.size(SyloSpacing.stackSm))
         Text(
-            if (uiState.isVerifying) "Verifying…" else "Enter PIN to unlock Sylo",
+            stringResource(if (uiState.isVerifying) R.string.unlock_verifying else R.string.unlock_enter_pin),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -194,7 +199,7 @@ private fun PinUnlockScreen(
                 Icon(Icons.Filled.Fingerprint, contentDescription = null, tint = SyloBrandCyan)
                 Spacer(Modifier.size(SyloSpacing.stackSm))
                 Text(
-                    "UNLOCK WITH BIOMETRICS",
+                    stringResource(R.string.unlock_biometrics),
                     style = MaterialTheme.typography.labelSmall,
                     color = SyloBrandCyan,
                 )
@@ -207,13 +212,13 @@ private fun PinUnlockScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             Text(
-                "Forgot PIN?",
+                stringResource(R.string.unlock_forgot_pin),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
             Text(
-                "Emergency",
+                stringResource(R.string.unlock_emergency),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

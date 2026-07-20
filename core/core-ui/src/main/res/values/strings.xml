@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shared, localizable strings for the whole app. Lives in :core-ui so every
+     feature module can reference them via com.sylo.core.ui.R.string.*. -->
+<resources>
+
+    <!-- Common -->
+    <string name="common_next">Next</string>
+    <string name="common_close">Close</string>
+    <string name="common_get_started">Get Started</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_active">ACTIVE</string>
+    <string name="common_save_expense">Save Expense</string>
+    <string name="common_submit">Submit</string>
+    <string name="common_saving">Saving…</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_no_browser">No browser available</string>
+
+    <!-- Onboarding -->
+    <string name="onb_capture_label">CAPTURE</string>
+    <string name="onb_capture_value">Voice</string>
+    <string name="onb_voice_title">Track expenses by voice</string>
+    <string name="onb_voice_body">Just say what you spent — Sylo captures the amount and category in seconds.</string>
+    <string name="onb_insights_label">INSIGHTS</string>
+    <string name="onb_insights_value">84%</string>
+    <string name="onb_insights_title">See the full picture</string>
+    <string name="onb_insights_body">Automated insights and clear visualizations help you understand your spending habits at a glance.</string>
+    <string name="onb_secure_label">SECURE</string>
+    <string name="onb_secure_value">Locked</string>
+    <string name="onb_secure_title">Private &amp; secure by design</string>
+    <string name="onb_secure_body">Your data is encrypted on-device and locked behind your PIN and biometrics. Nothing leaves your phone.</string>
+    <string name="onb_chip_saving">Saving</string>
+
+    <!-- PIN unlock -->
+    <string name="unlock_welcome">Welcome Back</string>
+    <string name="unlock_verifying">Verifying…</string>
+    <string name="unlock_enter_pin">Enter PIN to unlock Sylo</string>
+    <string name="unlock_biometrics">UNLOCK WITH BIOMETRICS</string>
+    <string name="unlock_forgot_pin">Forgot PIN?</string>
+    <string name="unlock_emergency">Emergency</string>
+
+    <!-- Biometric prompts -->
+    <string name="bio_unlock_title">Unlock Sylo</string>
+    <string name="bio_unlock_subtitle_decrypt">Confirm your identity to decrypt your data</string>
+    <string name="bio_unlock_subtitle">Confirm your identity to unlock</string>
+    <string name="bio_bind_title">Enable biometric unlock</string>
+    <string name="bio_bind_subtitle">Bind your encrypted data to your fingerprint</string>
+
+    <!-- PIN setup -->
+    <string name="pin_create_title">Create your secure PIN</string>
+    <string name="pin_create_subtitle">This PIN will be used to authorize transactions and secure your financial data.</string>
+    <string name="pin_enable_biometric">Enable Biometric Login</string>
+    <string name="pin_e2e_storage">End-to-end encrypted storage</string>
+
+    <!-- Settings -->
+    <string name="settings_profile">Profile</string>
+    <string name="settings_secured_locally">Secured locally with PIN + biometrics</string>
+    <string name="settings_pro_title">Sylo Pro</string>
+    <string name="settings_pro_subtitle">Advanced insights &amp; unlimited voice capture</string>
+    <string name="settings_upgrade">Upgrade</string>
+    <string name="settings_profile_updated">Profile updated</string>
+    <string name="settings_balance_updated">Balance updated</string>
+    <string name="settings_your_name">Your name</string>
+    <string name="settings_enter_name">Enter your name</string>
+    <string name="settings_profile_photo">Profile photo</string>
+    <string name="settings_change_photo">Change photo</string>
+    <string name="settings_section_identity">Identity</string>
+    <string name="settings_section_security">Security</string>
+    <string name="settings_section_preferences">Preferences</string>
+    <string name="settings_section_support">Support</string>
+    <string name="settings_verify_email">Verify email</string>
+    <string name="settings_verify_email_subtitle">Confirm your email with Google — no OTP</string>
+    <string name="settings_verified_prefix">Verified · %1$s</string>
+    <string name="settings_change_pin">Change PIN</string>
+    <string name="settings_biometrics">Biometrics</string>
+    <string name="settings_biometrics_unavailable">Not available on this device</string>
+    <string name="settings_biometrics_bound">Unlocks your encrypted database</string>
+    <string name="settings_biometrics_use">Use fingerprint or face to unlock</string>
+    <string name="settings_autocapture">Auto-capture payments</string>
+    <string name="settings_autocapture_on">Reading bank &amp; wallet notifications</string>
+    <string name="settings_autocapture_off">Tap to grant notification access</string>
+    <string name="settings_import_sms">Import bank SMS</string>
+    <string name="settings_import_sms_on">Scanning today\'s bank messages</string>
+    <string name="settings_import_sms_off">Read bank SMS to auto-log expenses</string>
+    <string name="settings_balance_currency">Balance &amp; Currency</string>
+    <string name="settings_balance_currency_subtitle">Set your opening balance and currency</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_help_center">Help Center</string>
+    <string name="settings_terms">Terms of Service</string>
+    <string name="settings_logout">Logout</string>
+    <string name="settings_footer">SYLO FINANCE ENGINE V2.4.1\nIntelligent. Secure. Trustworthy.</string>
+    <string name="settings_sms_permission_needed">SMS permission is needed to import bank statements</string>
+    <string name="settings_stat_total_saved">Total Saved</string>
+    <string name="settings_stat_days_tracking">Days Tracking</string>
+    <string name="settings_stat_transactions">Transactions</string>
+    <string name="settings_stat_this_month">This Month</string>
+    <string name="settings_name_dialog_title">Your name</string>
+    <string name="settings_name_dialog_save">Save</string>
+    <string name="settings_edit_name">Edit name</string>
+    <string name="settings_verified_badge">VERIFIED</string>
+    <string name="settings_verify_success">Verified %1$s</string>
+    <string name="settings_verify_no_credential">No verifiable email found on this device</string>
+    <string name="settings_verify_error">Couldn\'t verify email. Please try again.</string>
+
+    <!-- Theme options -->
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <!-- Language options -->
+    <string name="language_system">System default</string>
+    <string name="language_english">English</string>
+    <string name="language_arabic">العربية</string>
+
+    <!-- Dashboard -->
+    <string name="dash_total_balance">TOTAL BALANCE</string>
+    <string name="dash_remaining">Remaining </string>
+    <string name="dash_this_month">This Month</string>
+    <string name="dash_recent_transactions">Recent Transactions</string>
+    <string name="dash_view_all">View all</string>
+    <string name="dash_top_category">%1$s is your top spending category this month (%2$d%%).</string>
+    <string name="dash_empty">Tap the mic to add your first expense by voice, or add one manually.</string>
+    <string name="dash_add_expense">Add Expense</string>
+
+    <!-- Analytics -->
+    <string name="analytics_category_breakdown">Category Breakdown</string>
+    <string name="analytics_empty">Add expenses to see your spending analytics.</string>
+
+    <!-- Add expense -->
+    <string name="add_new_expense">New Expense</string>
+    <string name="add_note_placeholder">What was this for?</string>
+    <string name="add_attach_receipt">Attach Receipt (Optional)</string>
+    <string name="add_attached_receipt">Attached receipt</string>
+    <string name="add_remove_receipt">Remove receipt</string>
+
+    <!-- Transaction detail -->
+    <string name="detail_receipt">Receipt</string>
+
+    <!-- History -->
+    <string name="history_search_placeholder">Search transactions…</string>
+    <string name="history_empty_none">No transactions yet</string>
+    <string name="history_empty_none_hint">Add an expense to see it here.</string>
+    <string name="history_empty_search">No matches</string>
+    <string name="history_empty_search_hint">Try a different search.</string>
+
+    <!-- Voice capture -->
+    <string name="voice_hold_to_speak">Hold to speak</string>
+    <string name="voice_listening">Listening…</string>
+    <string name="voice_press_hold">Press and hold, then release to add</string>
+    <string name="voice_watching_category">Watching for category: %1$s</string>
+    <string name="voice_hold_to_record">Hold to record</string>
+    <string name="voice_mic_needed_settings">Tap the mic to enable it in Settings</string>
+    <string name="voice_mic_needed">Tap the mic to allow microphone access</string>
+    <string name="voice_status_hold">HOLD TO SPEAK</string>
+    <string name="voice_status_listening">LISTENING…</string>
+    <string name="voice_status_listening_lang">LISTENING (%1$s)…</string>
+    <string name="voice_status_unavailable">UNAVAILABLE</string>
+    <string name="voice_how_it_works">HOW IT WORKS</string>
+    <string name="voice_previous_context">PREVIOUS CONTEXT</string>
+    <string name="voice_how_it_works_body">Hold the mic and say the amount and what it was for — e.g. \"Coffee 45\".</string>
+    <string name="voice_review_expense">Review expense</string>
+    <string name="voice_i_heard">I heard: \"%1$s\"</string>
+    <string name="voice_no_amount">No amount detected — tap Edit to enter it.</string>
+    <string name="voice_edit">Edit</string>
+
+    <!-- Voice review -->
+    <string name="review_title">Review Transaction</string>
+    <string name="review_i_heard">I heard: \"%1$s\". Is this correct?</string>
+    <string name="review_no_amount">No amount detected. Tap \"Edit Details\" to enter it manually.</string>
+    <string name="review_confirm_save">Confirm &amp; Save</string>
+    <string name="review_edit_details">Edit Details</string>
+
+    <!-- Notifications -->
+    <string name="notif_title">Notifications</string>
+    <string name="notif_mark_all_read">Mark all as read</string>
+    <string name="notif_clear_all">CLEAR ALL NOTIFICATIONS</string>
+    <string name="notif_just_now">just now</string>
+    <string name="notif_minutes_ago">%1$dm ago</string>
+    <string name="notif_hours_ago">%1$dh ago</string>
+    <string name="notif_yesterday">Yesterday</string>
+    <string name="notif_days_ago">%1$dd ago</string>
+
+</resources>

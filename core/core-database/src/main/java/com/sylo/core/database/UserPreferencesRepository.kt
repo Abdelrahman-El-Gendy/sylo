@@ -35,6 +35,7 @@ class UserPreferencesRepository @Inject constructor(
     private val smsAutoCaptureEnabledKey = booleanPreferencesKey("sms_auto_capture_enabled")
     private val smsLastProcessedMillisKey = longPreferencesKey("sms_last_processed_millis")
     private val voiceLanguageKey = stringPreferencesKey("voice_language")
+    private val themeModeKey = stringPreferencesKey("theme_mode")
 
     private val prefs: Flow<androidx.datastore.preferences.core.Preferences> =
         context.userPreferencesStore.data.catch { if (it is IOException) emit(emptyPreferences()) else throw it }
@@ -75,6 +76,9 @@ class UserPreferencesRepository @Inject constructor(
      * enum name, or "AUTO"). Remembered so a manual override sticks across recordings.
      */
     val voiceLanguage: Flow<String> = prefs.map { it[voiceLanguageKey] ?: DEFAULT_VOICE_LANGUAGE }
+
+    /** Persisted theme mode: "SYSTEM" (follow device), "LIGHT" or "DARK". */
+    val themeMode: Flow<String> = prefs.map { it[themeModeKey] ?: DEFAULT_THEME_MODE }
 
     suspend fun setOpeningBalance(amountMinor: Long) {
         context.userPreferencesStore.edit { it[openingBalanceKey] = amountMinor }
@@ -120,10 +124,15 @@ class UserPreferencesRepository @Inject constructor(
         context.userPreferencesStore.edit { it[voiceLanguageKey] = value }
     }
 
+    suspend fun setThemeMode(value: String) {
+        context.userPreferencesStore.edit { it[themeModeKey] = value }
+    }
+
     companion object {
         const val DEFAULT_CURRENCY = "USD"
         const val DEFAULT_NAME = "Sylo User"
         const val DEFAULT_VOICE_LANGUAGE = "AUTO"
+        const val DEFAULT_THEME_MODE = "SYSTEM"
         val CURRENCIES = listOf("USD", "EUR", "GBP", "EGP", "AED", "SAR", "INR", "JPY")
     }
 }

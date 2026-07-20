@@ -3,6 +3,7 @@ package com.sylo.feature.settings
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sylo.core.common.locale.LocaleHelper
 import com.sylo.core.database.TransactionRepository
 import com.sylo.core.database.UserPreferencesRepository
 import com.sylo.core.security.biometric.BiometricAuthenticator
@@ -10,11 +11,17 @@ import com.sylo.core.security.biometric.BiometricPreferences
 import com.sylo.core.security.crypto.BiometricCryptoManager
 import com.sylo.core.security.identity.VerifiedEmailManager
 import com.sylo.core.security.identity.VerifiedEmailResult
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.formatMoney
+import com.sylo.core.ui.theme.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -41,6 +48,7 @@ data class SettingsUiState(
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
     private val biometricPreferences: BiometricPreferences,
     private val biometricAuthenticator: BiometricAuthenticator,
     private val biometricCryptoManager: BiometricCryptoManager,
@@ -51,6 +59,29 @@ class SettingsViewModel @Inject constructor(
 
     val biometricAvailable: Boolean
         get() = biometricAuthenticator.canAuthenticate().usable
+
+    /** Persisted theme preference (System/Light/Dark). */
+    val themeMode: StateFlow<ThemeMode> = userPreferences.themeMode
+        .map { ThemeMode.fromKeyOrDefault(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, ThemeMode.SYSTEM)
+
+    fun setThemeMode(mode: ThemeMode) {
+        viewModelScope.launch { userPreferences.setThemeMode(mode.name) }
+    }
+
+    /** Persisted app language tag: "" (system), "en", or "ar". */
+    private val _languageTag = MutableStateFlow(LocaleHelper.getLanguageTag(appContext))
+    val languageTag: StateFlow<String> = _languageTag.asStateFlow()
+
+    /**
+     * Changing the app language needs an Activity recreate to take effect (the base
+     * context is fixed at attachBaseContext time), so the caller must recreate the
+     * hosting Activity right after this.
+     */
+    fun setLanguageTag(tag: String) {
+        LocaleHelper.setLanguageTag(appContext, tag)
+        _languageTag.value = tag
+    }
 
     private val _uiState = MutableStateFlow(
         SettingsUiState(
@@ -107,13 +138,13 @@ class SettingsViewModel @Inject constructor(
                     }
                     // TODO(server): forward the raw credential response + nonce to the Sylo
                     //  backend for full cryptographic validation before trusting this identity.
-                    onMessage("Verified ${info.email}")
+                    onMessage(appContext.getString(R.string.settings_verify_success, info.email))
                 }
                 VerifiedEmailResult.Cancelled -> Unit // user dismissed — stay quiet
                 VerifiedEmailResult.NoCredential ->
-                    onMessage("No verifiable email found on this device")
+                    onMessage(appContext.getString(R.string.settings_verify_no_credential))
                 is VerifiedEmailResult.Error ->
-                    onMessage("Couldn't verify email. Please try again.")
+                    onMessage(appContext.getString(R.string.settings_verify_error))
             }
             _uiState.update { it.copy(verifyingEmail = false) }
         }

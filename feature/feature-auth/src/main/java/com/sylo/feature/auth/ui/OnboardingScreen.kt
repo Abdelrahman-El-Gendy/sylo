@@ -37,15 +37,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.annotation.StringRes
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.ui.R
 import com.sylo.core.ui.theme.SyloBrandCyan
 import com.sylo.core.ui.theme.SyloSpacing
 import kotlinx.coroutines.launch
@@ -69,41 +71,41 @@ fun OnboardingRoute(
 
 private data class OnbPage(
     val icon: ImageVector?,
-    val label: String,
-    val value: String,
+    @StringRes val label: Int,
+    @StringRes val value: Int,
     val fraction: Float,
     val showBars: Boolean,
-    val title: String,
-    val body: String,
+    @StringRes val title: Int,
+    @StringRes val body: Int,
 )
 
 private val onboardingPages = listOf(
     OnbPage(
         icon = Icons.Filled.Mic,
-        label = "CAPTURE",
-        value = "Voice",
+        label = R.string.onb_capture_label,
+        value = R.string.onb_capture_value,
         fraction = 0.55f,
         showBars = false,
-        title = "Track expenses by voice",
-        body = "Just say what you spent — Sylo captures the amount and category in seconds.",
+        title = R.string.onb_voice_title,
+        body = R.string.onb_voice_body,
     ),
     OnbPage(
         icon = null,
-        label = "INSIGHTS",
-        value = "84%",
+        label = R.string.onb_insights_label,
+        value = R.string.onb_insights_value,
         fraction = 0.72f,
         showBars = true,
-        title = "See the full picture",
-        body = "Automated insights and clear visualizations help you understand your spending habits at a glance.",
+        title = R.string.onb_insights_title,
+        body = R.string.onb_insights_body,
     ),
     OnbPage(
         icon = Icons.Filled.Lock,
-        label = "SECURE",
-        value = "Locked",
+        label = R.string.onb_secure_label,
+        value = R.string.onb_secure_value,
         fraction = 1f,
         showBars = false,
-        title = "Private & secure by design",
-        body = "Your data is encrypted on-device and locked behind your PIN and biometrics. Nothing leaves your phone.",
+        title = R.string.onb_secure_title,
+        body = R.string.onb_secure_body,
     ),
 )
 
@@ -120,6 +122,7 @@ private fun OnboardingPager(onGetStarted: () -> Unit) {
             .padding(horizontal = SyloSpacing.containerMargin, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // "Sylo" is the brand wordmark, not user-facing copy — kept literal like a logo.
         Text(
             "Sylo",
             style = MaterialTheme.typography.titleLarge,
@@ -139,7 +142,7 @@ private fun OnboardingPager(onGetStarted: () -> Unit) {
 
         val isLast = pagerState.currentPage == pages.lastIndex
         OnboardingButton(
-            label = if (isLast) "Get Started" else "Next",
+            label = stringResource(if (isLast) R.string.common_get_started else R.string.common_next),
             filled = isLast,
         ) {
             if (isLast) onGetStarted()
@@ -159,14 +162,14 @@ private fun OnboardingPageContent(page: OnbPage) {
         HeroRing(page)
         Spacer(Modifier.height(SyloSpacing.sectionGap))
         Text(
-            page.title,
+            stringResource(page.title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(SyloSpacing.stackMd))
         Text(
-            page.body,
+            stringResource(page.body),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -211,12 +214,12 @@ private fun HeroRing(page: OnbPage) {
                 Spacer(Modifier.height(SyloSpacing.stackSm))
             }
             Text(
-                page.label,
+                stringResource(page.label),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                page.value,
+                stringResource(page.value),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = SyloBrandCyan,
@@ -231,7 +234,7 @@ private fun HeroRing(page: OnbPage) {
         )
         GlassChip(
             icon = Icons.Filled.ShoppingBag,
-            label = "Saving",
+            label = stringResource(R.string.onb_chip_saving),
             modifier = Modifier.align(Alignment.BottomStart),
         )
     }
@@ -243,7 +246,7 @@ private fun GlassChip(icon: ImageVector, label: String, modifier: Modifier = Mod
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f))
-            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -278,7 +281,7 @@ private fun OnboardingButton(label: String, filled: Boolean, onClick: () -> Unit
             .fillMaxWidth()
             .clip(CircleShape)
             .background(container)
-            .then(if (filled) Modifier else Modifier.border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape))
+            .then(if (filled) Modifier else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape))
             .clickable(onClick = onClick)
             .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.Center,
