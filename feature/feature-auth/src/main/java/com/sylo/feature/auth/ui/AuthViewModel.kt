@@ -1,5 +1,6 @@
 package com.sylo.feature.auth.ui
 
+import android.content.Context
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +10,9 @@ import com.sylo.core.security.crypto.BiometricCryptoManager
 import com.sylo.core.security.crypto.CryptoKeyManager
 import com.sylo.core.security.crypto.SessionKeyHolder
 import com.sylo.core.security.pin.PinManager
+import com.sylo.core.ui.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +49,7 @@ class AuthViewModel @Inject constructor(
     private val biometricCryptoManager: BiometricCryptoManager,
     private val sessionKeyHolder: SessionKeyHolder,
     val biometricAuthenticator: BiometricAuthenticator,
+    @ApplicationContext private val appContext: Context,
 ) : ViewModel() {
 
     private val pin = StringBuilder()
@@ -117,7 +121,7 @@ class AuthViewModel @Inject constructor(
             } else {
                 pin.clear()
                 _uiState.update {
-                    it.copy(enteredDigits = 0, isVerifying = false, error = "Incorrect PIN. Try again.")
+                    it.copy(enteredDigits = 0, isVerifying = false, error = appContext.getString(R.string.unlock_incorrect_pin))
                 }
             }
         }

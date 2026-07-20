@@ -3,11 +3,19 @@
      feature module can reference them via com.sylo.core.ui.R.string.*. -->
 <resources>
 
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_analytics">Analytics</string>
+    <string name="nav_settings">Settings</string>
+
     <!-- Common -->
     <string name="common_next">Next</string>
     <string name="common_close">Close</string>
     <string name="common_get_started">Get Started</string>
     <string name="common_delete">Delete</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_back">Back</string>
     <string name="common_active">ACTIVE</string>
     <string name="common_save_expense">Save Expense</string>
     <string name="common_submit">Submit</string>
@@ -37,6 +45,7 @@
     <string name="unlock_biometrics">UNLOCK WITH BIOMETRICS</string>
     <string name="unlock_forgot_pin">Forgot PIN?</string>
     <string name="unlock_emergency">Emergency</string>
+    <string name="unlock_incorrect_pin">Incorrect PIN. Try again.</string>
 
     <!-- Biometric prompts -->
     <string name="bio_unlock_title">Unlock Sylo</string>
@@ -116,25 +125,49 @@
     <string name="dash_total_balance">TOTAL BALANCE</string>
     <string name="dash_remaining">Remaining </string>
     <string name="dash_this_month">This Month</string>
+    <string name="dash_withdrawals_prefix">Withdrawals: </string>
+    <string name="dash_empty_title">No transactions yet</string>
     <string name="dash_recent_transactions">Recent Transactions</string>
     <string name="dash_view_all">View all</string>
+    <string name="dash_sylo_insight">Sylo Insight</string>
     <string name="dash_top_category">%1$s is your top spending category this month (%2$d%%).</string>
     <string name="dash_empty">Tap the mic to add your first expense by voice, or add one manually.</string>
     <string name="dash_add_expense">Add Expense</string>
 
     <!-- Analytics -->
+    <string name="analytics_title">Analytics</string>
+    <string name="analytics_period_week">Week</string>
+    <string name="analytics_period_month">Month</string>
+    <string name="analytics_period_year">Year</string>
+    <string name="analytics_total_spending">Total Spending</string>
     <string name="analytics_category_breakdown">Category Breakdown</string>
+    <string name="analytics_empty_title">No spending yet</string>
     <string name="analytics_empty">Add expenses to see your spending analytics.</string>
+    <string name="analytics_transactions_count">%1$d transactions</string>
+    <string name="analytics_percent">%1$d%%</string>
 
     <!-- Add expense -->
     <string name="add_new_expense">New Expense</string>
+    <string name="add_amount_label">Amount</string>
+    <string name="add_category_label">Category</string>
+    <string name="add_date_label">Date</string>
+    <string name="add_payment_method_label">Payment Method</string>
+    <string name="add_payment_method_personal_debit">Personal Debit</string>
+    <string name="add_note_label">Note</string>
     <string name="add_note_placeholder">What was this for?</string>
     <string name="add_attach_receipt">Attach Receipt (Optional)</string>
     <string name="add_attached_receipt">Attached receipt</string>
     <string name="add_remove_receipt">Remove receipt</string>
+    <string name="category_food">Food</string>
+    <string name="category_travel">Travel</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_leisure">Leisure</string>
 
     <!-- Transaction detail -->
     <string name="detail_receipt">Receipt</string>
+    <string name="detail_not_found">Transaction not found</string>
+    <string name="detail_category_label">Category</string>
+    <string name="detail_status_label">Status</string>
 
     <!-- History -->
     <string name="history_search_placeholder">Search transactions…</string>
@@ -142,6 +175,11 @@
     <string name="history_empty_none_hint">Add an expense to see it here.</string>
     <string name="history_empty_search">No matches</string>
     <string name="history_empty_search_hint">Try a different search.</string>
+    <string name="history_filter_daily">Daily</string>
+    <string name="history_filter_weekly">Weekly</string>
+    <string name="history_filter_monthly">Monthly</string>
+    <string name="history_today">Today</string>
+    <string name="history_yesterday">Yesterday</string>
 
     <!-- Voice capture -->
     <string name="voice_hold_to_speak">Hold to speak</string>
@@ -162,6 +200,7 @@
     <string name="voice_i_heard">I heard: \"%1$s\"</string>
     <string name="voice_no_amount">No amount detected — tap Edit to enter it.</string>
     <string name="voice_edit">Edit</string>
+    <string name="voice_spending_insight">You usually spend ~%1$.0f %2$s on %3$s.</string>
 
     <!-- Voice review -->
     <string name="review_title">Review Transaction</string>
@@ -169,6 +208,8 @@
     <string name="review_no_amount">No amount detected. Tap \"Edit Details\" to enter it manually.</string>
     <string name="review_confirm_save">Confirm &amp; Save</string>
     <string name="review_edit_details">Edit Details</string>
+    <string name="review_saved_to_label">Saved to</string>
+    <string name="review_saved_to_value">Encrypted local DB</string>
 
     <!-- Notifications -->
     <string name="notif_title">Notifications</string>
@@ -179,5 +220,9 @@
     <string name="notif_hours_ago">%1$dh ago</string>
     <string name="notif_yesterday">Yesterday</string>
     <string name="notif_days_ago">%1$dd ago</string>
+    <string name="notif_today">Today</string>
+    <string name="notif_earlier">Earlier</string>
+    <string name="notif_all_caught_up">You\'re all caught up</string>
+    <string name="notif_empty_hint">Alerts from your spending will appear here.</string>
 
 </resources>

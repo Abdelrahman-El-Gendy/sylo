@@ -35,11 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SyloCard
 import com.sylo.core.ui.component.SyloPrimaryButton
 import com.sylo.core.ui.theme.MonoNumberStyle
@@ -79,10 +81,10 @@ fun VoiceReviewRoute(
                 }
 
                 Spacer(Modifier.height(SyloSpacing.stackMd))
-                Text("Review Transaction", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.review_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(SyloSpacing.stackSm))
                 Text(
-                    "I heard: \"${uiState.parsed.note}\". Is this correct?",
+                    stringResource(R.string.review_i_heard, uiState.parsed.note),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -97,7 +99,7 @@ fun VoiceReviewRoute(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Column {
-                                Text("Amount", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.add_amount_label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Row(verticalAlignment = Alignment.Bottom) {
                                     Text(uiState.parsed.amountDisplay, style = MaterialTheme.typography.headlineMedium, color = SyloBrandCyan, fontWeight = FontWeight.Bold)
                                     Text(" ${uiState.currency.ifBlank { uiState.parsed.currency }}", style = MonoNumberStyle, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
@@ -109,8 +111,8 @@ fun VoiceReviewRoute(
                         }
                         Spacer(Modifier.height(SyloSpacing.stackMd))
                         Row(Modifier.fillMaxWidth()) {
-                            LabeledValue("Category", uiState.parsed.category, Modifier.weight(1f))
-                            LabeledValue("Saved to", "Encrypted local DB", Modifier.weight(1f))
+                            LabeledValue(stringResource(R.string.detail_category_label), uiState.parsed.category, Modifier.weight(1f))
+                            LabeledValue(stringResource(R.string.review_saved_to_label), stringResource(R.string.review_saved_to_value), Modifier.weight(1f))
                         }
                     }
                 }
@@ -118,7 +120,7 @@ fun VoiceReviewRoute(
                 Spacer(Modifier.height(SyloSpacing.stackMd))
                 if (!uiState.canSave) {
                     Text(
-                        "No amount detected. Tap \"Edit Details\" to enter it manually.",
+                        stringResource(R.string.review_no_amount),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.Center,
@@ -129,14 +131,14 @@ fun VoiceReviewRoute(
                     CircularProgressIndicator(color = SyloBrandCyan)
                 } else {
                     SyloPrimaryButton(
-                        text = "Confirm & Save",
+                        text = stringResource(R.string.review_confirm_save),
                         onClick = { viewModel.confirmAndSave(onConfirmSave) },
                         enabled = uiState.canSave,
                     )
                 }
                 Spacer(Modifier.height(SyloSpacing.stackSm))
                 OutlinedButton(onClick = onEditDetails, modifier = Modifier.fillMaxWidth()) {
-                    Text("Edit Details")
+                    Text(stringResource(R.string.review_edit_details))
                 }
                 Spacer(Modifier.height(SyloSpacing.stackSm))
             }

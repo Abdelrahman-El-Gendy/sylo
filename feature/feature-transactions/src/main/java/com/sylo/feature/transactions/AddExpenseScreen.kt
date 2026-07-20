@@ -56,10 +56,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.SyloAmountField
 import com.sylo.core.ui.component.SyloCard
@@ -70,6 +72,9 @@ import com.sylo.core.ui.theme.SyloSpacing
 import java.io.File
 import java.util.UUID
 
+// `label` is the persisted category key (matched elsewhere by categoryIcon/analytics
+// grouping/voice parsing) — always English. The chip displays a localized label via
+// [categoryDisplayLabel] instead of this raw key.
 private data class Category(val label: String, val icon: ImageVector)
 
 private val categories = listOf(
@@ -78,6 +83,15 @@ private val categories = listOf(
     Category("Shopping", Icons.Filled.ShoppingBag),
     Category("Leisure", Icons.Filled.Nightlife),
 )
+
+@Composable
+internal fun categoryDisplayLabel(key: String): String = when (key) {
+    "Food" -> stringResource(R.string.category_food)
+    "Travel" -> stringResource(R.string.category_travel)
+    "Shopping" -> stringResource(R.string.category_shopping)
+    "Leisure" -> stringResource(R.string.category_leisure)
+    else -> key
+}
 
 /** Add-expense form presented as a modal bottom sheet over the current screen. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,7 +131,7 @@ fun AddExpenseSheet(
             .imePadding(),
     ) {
         Text(
-            "New Expense",
+            stringResource(R.string.add_new_expense),
             style = MaterialTheme.typography.titleLarge,
             color = SyloBrandCyan,
             modifier = Modifier.fillMaxWidth(),
@@ -132,7 +146,7 @@ fun AddExpenseSheet(
                     .padding(horizontal = SyloSpacing.stackMd, vertical = SyloSpacing.stackMd),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                SectionLabel("Amount")
+                SectionLabel(stringResource(R.string.add_amount_label))
                 Spacer(Modifier.height(SyloSpacing.stackSm))
                 SyloAmountField(
                     amount = amount,
@@ -143,7 +157,7 @@ fun AddExpenseSheet(
         }
 
         Spacer(Modifier.height(SyloSpacing.stackLg))
-        SectionLabel("Category")
+        SectionLabel(stringResource(R.string.add_category_label))
         Spacer(Modifier.height(SyloSpacing.stackSm))
         Row(horizontalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
             categories.forEach { cat ->
@@ -161,18 +175,22 @@ fun AddExpenseSheet(
             java.text.SimpleDateFormat("MM/dd/yyyy", java.util.Locale.getDefault())
                 .format(System.currentTimeMillis())
         }
-        FieldRow(label = "Date", value = today, icon = Icons.Filled.CalendarMonth)
+        FieldRow(label = stringResource(R.string.add_date_label), value = today, icon = Icons.Filled.CalendarMonth)
         Spacer(Modifier.height(SyloSpacing.stackSm))
-        FieldRow(label = "Payment Method", value = "Personal Debit", icon = Icons.Filled.CreditCard)
+        FieldRow(
+            label = stringResource(R.string.add_payment_method_label),
+            value = stringResource(R.string.add_payment_method_personal_debit),
+            icon = Icons.Filled.CreditCard,
+        )
 
         Spacer(Modifier.height(SyloSpacing.stackMd))
-        SectionLabel("Note")
+        SectionLabel(stringResource(R.string.add_note_label))
         Spacer(Modifier.height(SyloSpacing.stackSm))
         TextField(
             value = note,
             onValueChange = { note = it },
             modifier = Modifier.fillMaxWidth().height(96.dp),
-            placeholder = { Text("What was this for?") },
+            placeholder = { Text(stringResource(R.string.add_note_placeholder)) },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -195,7 +213,7 @@ fun AddExpenseSheet(
 
         Spacer(Modifier.height(SyloSpacing.stackLg))
         SyloPrimaryButton(
-            text = "Save Expense",
+            text = stringResource(R.string.common_save_expense),
             onClick = { viewModel.save(amount, selectedCategory, note, receiptPath, onSaved) },
             enabled = (amount.toDoubleOrNull() ?: 0.0) > 0.0,
         )
@@ -224,7 +242,7 @@ private fun CategoryChip(
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Icon(category.icon, contentDescription = null, tint = tint)
-        Text(category.label, style = MaterialTheme.typography.labelSmall, color = tint)
+        Text(categoryDisplayLabel(category.label), style = MaterialTheme.typography.labelSmall, color = tint)
     }
 }
 
@@ -262,7 +280,7 @@ private fun ReceiptAttach(
         ) {
             Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                "Attach Receipt (Optional)",
+                stringResource(R.string.add_attach_receipt),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -285,7 +303,7 @@ private fun ReceiptAttach(
         if (bitmap != null) {
             Image(
                 bitmap = bitmap.asImageBitmap(),
-                contentDescription = "Attached receipt",
+                contentDescription = stringResource(R.string.add_attached_receipt),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize().clickable(onClick = onPick),
             )
@@ -298,7 +316,7 @@ private fun ReceiptAttach(
                 .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f)),
         ) {
-            Icon(Icons.Filled.Close, contentDescription = "Remove receipt", tint = Color.White)
+            Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.add_remove_receipt), tint = Color.White)
         }
     }
 }

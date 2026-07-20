@@ -32,11 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.Sparkline
 import com.sylo.core.ui.component.SyloCard
@@ -74,7 +76,7 @@ private fun AnalyticsScreen(
     ) {
         item(span = fullSpan) { SyloTopBar() }
         item(span = fullSpan) {
-            Text("Analytics", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.analytics_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         }
         item(span = fullSpan) { PeriodTabs(selected = uiState.period, onSelect = onPeriodChange) }
 
@@ -87,7 +89,7 @@ private fun AnalyticsScreen(
         item(span = fullSpan) {
             SyloCard {
                 Column(Modifier.padding(SyloSpacing.stackMd)) {
-                    Text("Total Spending", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.analytics_total_spending), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(uiState.totalSpending, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.size(SyloSpacing.stackSm))
@@ -99,7 +101,7 @@ private fun AnalyticsScreen(
             }
         }
 
-        item(span = fullSpan) { SectionLabel("Category Breakdown") }
+        item(span = fullSpan) { SectionLabel(stringResource(R.string.analytics_category_breakdown)) }
         items(uiState.categories, key = { it.category }) { CategoryRow(it) }
     }
 }
@@ -120,7 +122,7 @@ private fun PeriodTabs(selected: AnalyticsPeriod, onSelect: (AnalyticsPeriod) ->
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        period.label,
+                        stringResource(period.labelRes),
                         style = MaterialTheme.typography.bodyMedium,
                         color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
@@ -161,11 +163,11 @@ private fun CategoryRow(item: CategorySpend) {
             }
             Column(Modifier.weight(1f)) {
                 Text(item.category, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-                Text("${item.transactions} transactions", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.analytics_transactions_count, item.transactions), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(item.amountLabel, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-                Text("${item.percent}%", style = MaterialTheme.typography.labelSmall, color = SyloBrandCyan)
+                Text(stringResource(R.string.analytics_percent, item.percent), style = MaterialTheme.typography.labelSmall, color = SyloBrandCyan)
             }
         }
     }
@@ -179,9 +181,9 @@ private fun EmptyAnalytics() {
     ) {
         Icon(Icons.Filled.InsertChart, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(48.dp))
         Spacer(Modifier.height(SyloSpacing.stackMd))
-        Text("No spending yet", style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(R.string.analytics_empty_title), style = MaterialTheme.typography.titleLarge)
         Text(
-            "Add expenses to see your spending analytics.",
+            stringResource(R.string.analytics_empty),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

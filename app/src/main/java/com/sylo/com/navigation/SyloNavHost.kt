@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.InsertChart
 import androidx.compose.material.icons.filled.Mic
@@ -30,7 +31,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.annotation.StringRes
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
@@ -50,6 +53,7 @@ import com.sylo.core.navigation.TransactionDetailRoute
 import com.sylo.core.navigation.TransactionsRoute
 import com.sylo.core.navigation.VoiceCaptureRoute
 import com.sylo.core.navigation.VoiceReviewRoute
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.LocalOnNotificationsClick
 import com.sylo.feature.auth.navigation.authEntries
 import com.sylo.feature.auth.navigation.pinSetupEntry
@@ -62,13 +66,13 @@ import com.sylo.feature.transactions.navigation.historyEntry
 import com.sylo.feature.transactions.navigation.transactionDetailEntry
 import com.sylo.feature.voice.navigation.voiceEntries
 
-private data class TabItem(val route: SyloDestination, val label: String, val icon: ImageVector)
+private data class TabItem(val route: SyloDestination, @StringRes val labelRes: Int, val icon: ImageVector)
 
 private val tabs = listOf(
-    TabItem(DashboardRoute, "Home", Icons.Filled.Home),
-    TabItem(TransactionsRoute, "History", Icons.AutoMirrored.Filled.ReceiptLong),
-    TabItem(AnalyticsRoute, "Analytics", Icons.Filled.InsertChart),
-    TabItem(SettingsRoute, "Settings", Icons.Filled.Settings),
+    TabItem(DashboardRoute, R.string.nav_home, Icons.Filled.Home),
+    TabItem(TransactionsRoute, R.string.nav_history, Icons.AutoMirrored.Filled.ReceiptLong),
+    TabItem(AnalyticsRoute, R.string.nav_analytics, Icons.Filled.InsertChart),
+    TabItem(SettingsRoute, R.string.nav_settings, Icons.Filled.Settings),
 )
 
 private val TOP_LEVEL_ROUTES: Set<NavKey> = tabs.map { it.route }.toSet()
@@ -224,6 +228,17 @@ private fun MainFlow(
                 )
             }
         },
+        floatingActionButton = {
+            if (showBars && navigationState.topLevelRoute == DashboardRoute) {
+                FloatingActionButton(
+                    onClick = { showAddExpense = true },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.dash_add_expense))
+                }
+            }
+        },
     ) { innerPadding ->
         CompositionLocalProvider(
             LocalOnNotificationsClick provides { navigator.navigate(NotificationsRoute) },
@@ -264,11 +279,12 @@ private fun SyloBottomBar(
                 if (index == 2) {
                     NavigationBarItem(selected = false, enabled = false, onClick = {}, icon = {}, label = null)
                 }
+                val label = stringResource(tab.labelRes)
                 NavigationBarItem(
                     selected = tab.route == navigationState.topLevelRoute,
                     onClick = { onTabClick(tab.route) },
-                    icon = { Icon(tab.icon, contentDescription = tab.label) },
-                    label = { Text(tab.label, style = MaterialTheme.typography.labelSmall) },
+                    icon = { Icon(tab.icon, contentDescription = label) },
+                    label = { Text(label, style = MaterialTheme.typography.labelSmall) },
                     colors = tabColors,
                 )
             }

@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sylo.core.database.notifications.NotificationKind
 import com.sylo.core.database.notifications.SyloNotification
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.SyloCard
 import com.sylo.core.ui.theme.SyloBrandCyan
@@ -61,16 +63,16 @@ fun NotificationsRoute(
             .padding(horizontal = SyloSpacing.containerMargin, vertical = SyloSpacing.stackSm),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
+            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.common_back)) }
             Text(
-                "Notifications",
+                stringResource(R.string.notif_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f).padding(start = 4.dp),
             )
             if (uiState.unreadCount > 0) {
                 Text(
-                    "Mark all as read",
+                    stringResource(R.string.notif_mark_all_read),
                     style = MaterialTheme.typography.labelSmall,
                     color = SyloBrandCyan,
                     // 48dp-tall tap target for accessibility.
@@ -92,17 +94,17 @@ fun NotificationsRoute(
         ) {
             if (today.isNotEmpty()) {
                 Spacer(Modifier.size(SyloSpacing.stackSm))
-                SectionLabel("Today")
+                SectionLabel(stringResource(R.string.notif_today))
                 today.forEach { NotificationCard(it, now) }
             }
             if (earlier.isNotEmpty()) {
                 Spacer(Modifier.size(SyloSpacing.stackSm))
-                SectionLabel("Earlier")
+                SectionLabel(stringResource(R.string.notif_earlier))
                 earlier.forEach { NotificationCard(it, now) }
             }
             Spacer(Modifier.size(SyloSpacing.stackMd))
             Text(
-                "CLEAR ALL NOTIFICATIONS",
+                stringResource(R.string.notif_clear_all),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -155,8 +157,8 @@ private fun EmptyNotifications() {
     ) {
         Icon(Icons.Filled.NotificationsNone, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(48.dp))
         Spacer(Modifier.size(SyloSpacing.stackMd))
-        Text("You're all caught up", style = MaterialTheme.typography.titleLarge)
-        Text("Alerts from your spending will appear here.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.notif_all_caught_up), style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(R.string.notif_empty_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -168,17 +170,18 @@ private fun iconFor(kind: NotificationKind): ImageVector = when (kind) {
     NotificationKind.CAPTURED -> Icons.Filled.CreditCard
 }
 
+@Composable
 private fun relativeTime(epochMillis: Long, now: Long): String {
     val diff = (now - epochMillis).coerceAtLeast(0)
     val min = diff / 60_000
     val hours = diff / 3_600_000
     val days = diff / 86_400_000
     return when {
-        min < 1 -> "just now"
-        min < 60 -> "${min}m ago"
-        hours < 24 -> "${hours}h ago"
-        days == 1L -> "Yesterday"
-        else -> "${days}d ago"
+        min < 1 -> stringResource(R.string.notif_just_now)
+        min < 60 -> stringResource(R.string.notif_minutes_ago, min.toInt())
+        hours < 24 -> stringResource(R.string.notif_hours_ago, hours.toInt())
+        days == 1L -> stringResource(R.string.notif_yesterday)
+        else -> stringResource(R.string.notif_days_ago, days.toInt())
     }
 }
 
