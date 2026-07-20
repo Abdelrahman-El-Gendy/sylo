@@ -1,10 +1,8 @@
 package com.sylo.feature.settings
 
 import android.Manifest
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -90,6 +88,7 @@ import java.util.UUID
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.common.locale.LocaleHelper
 import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.SyloCard
@@ -180,9 +179,10 @@ fun SettingsRoute(
             onSelect = { tag ->
                 viewModel.setLanguageTag(tag)
                 showLanguageDialog = false
-                // The base context locale is fixed at attachBaseContext time, so the
-                // Activity must be recreated for the new language to take effect.
-                context.findActivity()?.recreate()
+                // Restart the whole app (not just recreate the Activity) so BOTH the
+                // Application and Activity re-run LocaleHelper.wrap and every
+                // applicationContext-sourced string picks up the new language too.
+                LocaleHelper.restartApp(context)
             },
             onDismiss = { showLanguageDialog = false },
         )
@@ -347,8 +347,15 @@ fun SettingsRoute(
             )
         }
 
+        // Show the app's real version (from the installed package) rather than a
+        // hard-coded string, so the footer can't drift out of sync with the build.
+        val versionName = remember(context) {
+            runCatching {
+                context.packageManager.getPackageInfo(context.packageName, 0).versionName
+            }.getOrNull().orEmpty()
+        }
         Text(
-            stringResource(R.string.settings_footer),
+            stringResource(R.string.settings_footer, versionName),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -530,16 +537,6 @@ private fun languageLabel(tag: String): String = stringResource(
         else -> R.string.language_system
     },
 )
-
-/** Unwraps the hosting [Activity] from a Compose [Context], or null if not found. */
-private fun Context.findActivity(): Activity? {
-    var ctx: Context? = this
-    while (ctx is ContextWrapper) {
-        if (ctx is Activity) return ctx
-        ctx = ctx.baseContext
-    }
-    return null
-}
 
 /** Copies a picked image [uri] into app-internal storage and returns its absolute path. */
 private fun copyProfilePhotoToInternal(context: Context, uri: Uri): String? = runCatching {

@@ -95,7 +95,7 @@
     <string name="settings_help_center">مركز المساعدة</string>
     <string name="settings_terms">شروط الخدمة</string>
     <string name="settings_logout">تسجيل الخروج</string>
-    <string name="settings_footer">محرك Sylo المالي V2.4.1\nذكي. آمن. جدير بالثقة.</string>
+    <string name="settings_footer">محرك Sylo المالي V%1$s\nذكي. آمن. جدير بالثقة.</string>
     <string name="settings_sms_permission_needed">إذن الرسائل مطلوب لاستيراد كشوف الحساب البنكية</string>
     <string name="settings_stat_total_saved">إجمالي التوفير</string>
     <string name="settings_stat_days_tracking">أيام التتبع</string>

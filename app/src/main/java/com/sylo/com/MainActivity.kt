@@ -25,9 +25,13 @@ class MainActivity : FragmentActivity() {
 
     @Inject lateinit var userPreferences: UserPreferencesRepository
 
-    // Apply the user's chosen app language before any resources are resolved.
+    // Apply the user's chosen app language before any resources are resolved. wrap() covers
+    // base-context lookups, but the Activity resolves its own resources (the strings Compose
+    // reads via stringResource) against its own configuration, so the locale must also be
+    // pushed there via applyToActivity — otherwise the UI flips to RTL but text stays English.
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
+        LocaleHelper.applyToActivity(this, newBase)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
