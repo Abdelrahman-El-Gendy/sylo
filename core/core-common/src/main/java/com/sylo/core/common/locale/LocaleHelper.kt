@@ -1,6 +1,8 @@
 package com.sylo.core.common.locale
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import java.util.Locale
 
@@ -52,5 +54,55 @@ object LocaleHelper {
         config.setLocale(locale)
         config.setLayoutDirection(locale)
         return context.createConfigurationContext(config)
+    }
+
+    /**
+     * Applies the persisted language to an [Activity]'s own configuration.
+     *
+     * [wrap] only re-bases the *base* context, but an Activity resolves its resources —
+     * including the strings Compose reads through `stringResource()` — against its **own**
+     * configuration, which the framework keeps pinned to the system locale. Wrapping alone
+     * therefore left the UI flipped to RTL (from [Locale.setDefault], which drives layout
+     * direction) while every string stayed in the default language. [applyOverrideConfiguration]
+     * pushes the locale onto the Activity's resources so text is localized too.
+     *
+     * Passing a bare [Configuration] with only the locale set means every other field
+     * (density, screen size, …) is left "undefined" and inherited from the base config, so
+     * this overrides the locale and nothing else. Must be called from
+     * [Activity.attachBaseContext] (before `onCreate`); a no-op for "system".
+     */
+    fun applyToActivity(activity: Activity, base: Context) {
+        val tag = getLanguageTag(base)
+        if (tag.isEmpty()) return
+        val locale = Locale.forLanguageTag(tag)
+        val override = Configuration().apply {
+            setLocale(locale)
+            setLayoutDirection(locale)
+        }
+        activity.applyOverrideConfiguration(override)
+    }
+
+    /**
+     * Relaunches the app's task so the new language takes effect app-wide.
+     *
+     * [FLAG_ACTIVITY_CLEAR_TASK] finishes every activity and starts a *fresh* root
+     * activity, whose [android.app.Activity.attachBaseContext] re-runs [wrap] with the
+     * newly-persisted tag — so a plain `recreate()` (which some OEM ROMs, e.g. ColorOS,
+     * don't reliably re-locale) isn't relied on.
+     *
+     * The process is deliberately NOT killed. An earlier version called
+     * `Runtime.getRuntime().exit(0)` right after [Context.startActivity]; because the
+     * relaunched activity is created in the still-alive process, the exit raced with it
+     * and tore the new activity down, leaving a blank white window. Keeping the process
+     * alive relaunches instantly with no flash. (Application-context string lookups keep
+     * the previous language until the next cold start — an acceptable trade-off versus a
+     * broken switch; the visible UI, which reads through the Activity, is correct.)
+     */
+    fun restartApp(context: Context) {
+        val intent = context.packageManager
+            .getLaunchIntentForPackage(context.packageName)
+            ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            ?: return
+        context.startActivity(intent)
     }
 }

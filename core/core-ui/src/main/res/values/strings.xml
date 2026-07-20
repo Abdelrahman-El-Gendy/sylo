@@ -97,7 +97,7 @@
     <string name="settings_help_center">Help Center</string>
     <string name="settings_terms">Terms of Service</string>
     <string name="settings_logout">Logout</string>
-    <string name="settings_footer">SYLO FINANCE ENGINE V2.4.1\nIntelligent. Secure. Trustworthy.</string>
+    <string name="settings_footer">SYLO FINANCE ENGINE V%1$s\nIntelligent. Secure. Trustworthy.</string>
     <string name="settings_sms_permission_needed">SMS permission is needed to import bank statements</string>
     <string name="settings_stat_total_saved">Total Saved</string>
     <string name="settings_stat_days_tracking">Days Tracking</string>

@@ -77,6 +77,20 @@ android {
         }
     }
 
+    // The app switches language in-app (LocaleHelper) rather than via Play's on-demand
+    // language delivery. By default an app bundle splits each language into its own
+    // config APK and only the device-locale split is installed — so a device set to
+    // English never gets values-ar, and switching to Arabic in-app flips to RTL but every
+    // string falls back to English. This is exactly what happens when Android Studio
+    // deploys device-optimized splits (the terminal installs the universal APK, so it
+    // works). Keeping languages in the base module guarantees every locale ships on every
+    // install path (Studio, bundletool, Play).
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
