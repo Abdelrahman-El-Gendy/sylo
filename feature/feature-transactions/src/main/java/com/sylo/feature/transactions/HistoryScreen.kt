@@ -24,9 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.SyloTopBar
 import com.sylo.core.ui.component.TransactionRow
@@ -77,7 +79,7 @@ private fun HistoryScreen(
                 value = uiState.query,
                 onValueChange = onQueryChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search transactions...") },
+                placeholder = { Text(stringResource(R.string.history_search_placeholder)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true,
                 shape = MaterialTheme.shapes.large,
@@ -96,7 +98,7 @@ private fun HistoryScreen(
                     FilterChip(
                         selected = uiState.filter == filter,
                         onClick = { onFilterChange(filter) },
-                        label = { Text(filter.name) },
+                        label = { Text(stringResource(filter.labelRes)) },
                         shape = MaterialTheme.shapes.large,
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = SyloBrandCyan,
@@ -114,11 +116,11 @@ private fun HistoryScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        if (uiState.query.isBlank()) "No transactions yet" else "No matches",
+                        stringResource(if (uiState.query.isBlank()) R.string.history_empty_none else R.string.history_empty_search),
                         style = MaterialTheme.typography.titleLarge,
                     )
                     Text(
-                        if (uiState.query.isBlank()) "Add an expense to see it here." else "Try a different search.",
+                        stringResource(if (uiState.query.isBlank()) R.string.history_empty_none_hint else R.string.history_empty_search_hint),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

@@ -1,13 +1,17 @@
 package com.sylo.feature.transactions
 
+import android.content.Context
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sylo.core.database.TransactionRepository
 import com.sylo.core.database.entity.TransactionEntity
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.UiTransaction
 import com.sylo.core.ui.component.categoryIcon
 import com.sylo.core.ui.component.formatAmountLabel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +22,11 @@ import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
-enum class HistoryFilter { Daily, Weekly, Monthly }
+enum class HistoryFilter(@StringRes val labelRes: Int) {
+    Daily(R.string.history_filter_daily),
+    Weekly(R.string.history_filter_weekly),
+    Monthly(R.string.history_filter_monthly),
+}
 
 data class TransactionGroup(val label: String, val items: List<UiTransaction>)
 
@@ -31,6 +39,7 @@ data class HistoryUiState(
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
     private val repository: TransactionRepository,
+    @ApplicationContext private val appContext: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState())
@@ -85,8 +94,8 @@ class TransactionsViewModel @Inject constructor(
         val day = startOfDay(epochMillis)
         val dayMs = 24 * 60 * 60 * 1000L
         return when (today - day) {
-            0L -> "Today"
-            dayMs -> "Yesterday"
+            0L -> appContext.getString(R.string.history_today)
+            dayMs -> appContext.getString(R.string.history_yesterday)
             else -> SimpleDateFormat("MMM d", Locale.getDefault()).format(epochMillis)
         }
     }

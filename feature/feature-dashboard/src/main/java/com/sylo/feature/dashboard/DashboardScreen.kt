@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlin.math.PI
 import kotlin.math.sin
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.Sparkline
 import com.sylo.core.ui.component.SyloCard
@@ -83,7 +85,7 @@ private fun DashboardScreen(
             .padding(horizontal = SyloSpacing.containerMargin),
         verticalArrangement = Arrangement.spacedBy(SyloSpacing.stackMd),
     ) {
-        SyloTopBar(onAddClick = onAddExpense)
+        SyloTopBar()
 
         if (!uiState.hasData) {
             EmptyDashboard(onAddExpense)
@@ -105,7 +107,7 @@ private fun DashboardScreen(
         // Spending this month + trend
         SyloCard {
             Column(Modifier.padding(SyloSpacing.stackMd)) {
-                Text("This Month", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.dash_this_month), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(uiState.monthSpend, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                 if (uiState.spendTrend.size >= 2) {
                     Spacer(Modifier.height(SyloSpacing.stackSm))
@@ -124,9 +126,9 @@ private fun DashboardScreen(
                 Row(Modifier.padding(SyloSpacing.stackMd), horizontalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
                     Icon(Icons.Filled.Lightbulb, contentDescription = null, tint = SyloBrandCyan)
                     Column {
-                        Text("Sylo Insight", style = MaterialTheme.typography.labelSmall, color = SyloBrandCyan)
+                        Text(stringResource(R.string.dash_sylo_insight), style = MaterialTheme.typography.labelSmall, color = SyloBrandCyan)
                         Text(
-                            "$category is your top spending category this month (${uiState.topCategoryPercent}%).",
+                            stringResource(R.string.dash_top_category, category, uiState.topCategoryPercent),
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
@@ -136,9 +138,9 @@ private fun DashboardScreen(
 
         // Recent transactions
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            SectionLabel("Recent Transactions")
+            SectionLabel(stringResource(R.string.dash_recent_transactions))
             Text(
-                "View all",
+                stringResource(R.string.dash_view_all),
                 style = MaterialTheme.typography.labelSmall,
                 color = SyloBrandCyan,
                 // clickable + padding gives the tap target a 48dp-tall hit area (a11y).
@@ -196,7 +198,7 @@ private fun BalanceRing(
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                "TOTAL BALANCE",
+                stringResource(R.string.dash_total_balance),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -205,7 +207,7 @@ private fun BalanceRing(
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "Remaining ",
+                    stringResource(R.string.dash_remaining),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -286,11 +288,11 @@ private fun WithdrawalIndicator(amount: String, modifier: Modifier = Modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(8.dp).clip(CircleShape).background(SyloBrandCyan))
             Spacer(Modifier.width(8.dp))
-            Text("Withdrawals: ", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.dash_withdrawals_prefix), style = MaterialTheme.typography.bodyLarge)
             Text(amount, style = MaterialTheme.typography.bodyLarge, color = SyloBrandCyan, fontWeight = FontWeight.Bold)
         }
         Text(
-            "This Month",
+            stringResource(R.string.dash_this_month),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -304,14 +306,14 @@ private fun EmptyDashboard(onAddExpense: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(Icons.Filled.Mic, contentDescription = null, tint = SyloBrandCyan, modifier = Modifier.padding(bottom = 12.dp))
-        Text("No transactions yet", style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(R.string.dash_empty_title), style = MaterialTheme.typography.titleLarge)
         Text(
-            "Tap the mic to add your first expense by voice, or add one manually.",
+            stringResource(R.string.dash_empty),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(SyloSpacing.stackLg))
-        com.sylo.core.ui.component.SyloPrimaryButton(text = "Add Expense", onClick = onAddExpense)
+        com.sylo.core.ui.component.SyloPrimaryButton(text = stringResource(R.string.dash_add_expense), onClick = onAddExpense)
     }
 }

@@ -38,11 +38,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sylo.core.database.entity.TransactionEntity
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.StatusDot
 import com.sylo.core.ui.component.SyloCard
@@ -71,7 +73,7 @@ fun TransactionDetailRoute(
         verticalArrangement = Arrangement.spacedBy(SyloSpacing.stackMd),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
+            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.common_back)) }
             Text("Sylo", style = MaterialTheme.typography.titleLarge, color = SyloBrandCyan)
             Box(Modifier.size(48.dp))
         }
@@ -82,7 +84,7 @@ fun TransactionDetailRoute(
                 CircularProgressIndicator(color = SyloBrandCyan)
             }
             tx == null -> Box(Modifier.fillMaxWidth().padding(top = 96.dp), contentAlignment = Alignment.Center) {
-                Text("Transaction not found", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.detail_not_found), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             else -> DetailContent(tx, onEdit) { viewModel.delete(tx.id, onBack) }
         }
@@ -96,7 +98,7 @@ private fun DetailContent(tx: TransactionEntity, onEdit: () -> Unit, onDelete: (
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
         Text(tx.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        CategoryChip(tx.category.uppercase())
+        CategoryChip(categoryDisplayLabel(tx.category).uppercase())
         Text(formatAmountLabel(tx.amountMinor, tx.currency), style = MaterialTheme.typography.displayLarge, color = amountColor, fontWeight = FontWeight.Bold)
         Text(dateLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -104,19 +106,19 @@ private fun DetailContent(tx: TransactionEntity, onEdit: () -> Unit, onDelete: (
     Spacer(Modifier.size(SyloSpacing.stackSm))
     SyloCard {
         Column(Modifier.padding(SyloSpacing.stackMd), verticalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
-            DetailRow("Category") { Text(tx.category, style = MaterialTheme.typography.bodyMedium) }
+            DetailRow(stringResource(R.string.detail_category_label)) { Text(categoryDisplayLabel(tx.category), style = MaterialTheme.typography.bodyMedium) }
             tx.status?.let { status ->
-                DetailRow("Status") { StatusDot(status) }
+                DetailRow(stringResource(R.string.detail_status_label)) { StatusDot(status) }
             }
             tx.note?.takeIf { it.isNotBlank() }?.let { note ->
                 Column {
-                    SectionLabel("Note")
+                    SectionLabel(stringResource(R.string.add_note_label))
                     Text(note, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             tx.receiptPath?.takeIf { File(it).exists() }?.let { path ->
                 Column {
-                    SectionLabel("Receipt")
+                    SectionLabel(stringResource(R.string.detail_receipt))
                     Spacer(Modifier.size(SyloSpacing.stackSm))
                     ReceiptImage(path)
                 }
@@ -128,7 +130,7 @@ private fun DetailContent(tx: TransactionEntity, onEdit: () -> Unit, onDelete: (
     Row(horizontalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
         OutlinedButton(onClick = onDelete, colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
             Icon(Icons.Filled.Delete, contentDescription = null)
-            Text("Delete", modifier = Modifier.padding(start = 4.dp))
+            Text(stringResource(R.string.common_delete), modifier = Modifier.padding(start = 4.dp))
         }
         Button(
             onClick = onEdit,
@@ -136,7 +138,7 @@ private fun DetailContent(tx: TransactionEntity, onEdit: () -> Unit, onDelete: (
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
         ) {
             Icon(Icons.Filled.Edit, contentDescription = null)
-            Text("Edit", modifier = Modifier.padding(start = 4.dp))
+            Text(stringResource(R.string.common_edit), modifier = Modifier.padding(start = 4.dp))
         }
     }
     Spacer(Modifier.size(SyloSpacing.stackMd))
@@ -151,7 +153,7 @@ private fun ReceiptImage(path: String) {
     if (bitmap != null) {
         Image(
             bitmap = bitmap.asImageBitmap(),
-            contentDescription = "Receipt",
+            contentDescription = stringResource(R.string.detail_receipt),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()

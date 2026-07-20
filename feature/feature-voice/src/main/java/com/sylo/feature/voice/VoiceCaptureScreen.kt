@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -66,6 +67,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sylo.core.database.entity.TransactionEntity
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SyloPrimaryButton
 import com.sylo.core.ui.component.SyloTopBar
 import com.sylo.core.ui.component.currencySymbol
@@ -129,8 +131,9 @@ fun VoiceCaptureRoute(
     val liveText = state.finalText?.takeIf { it.isNotBlank() } ?: state.partialText
     val recorded = state.finalText?.takeIf { it.isNotBlank() }
     val category = if (liveText.isBlank()) null else viewModel.currentCategory()
-    val insight = remember(liveText, transactions, currency) {
-        spendingInsight(category, transactions, currency)
+    val insightTemplate = stringResource(R.string.voice_spending_insight)
+    val insight = remember(liveText, transactions, currency, insightTemplate) {
+        spendingInsight(category, transactions, currency, insightTemplate)
     }
 
     // Android's SpeechRecognizer reports loudness in dB (~0 quiet … ~10 loud);
@@ -143,8 +146,8 @@ fun VoiceCaptureRoute(
         available = state.available && hasPermission,
         error = when {
             hasPermission -> state.error
-            permanentlyDenied -> "Tap the mic to enable it in Settings"
-            else -> "Tap the mic to allow microphone access"
+            permanentlyDenied -> stringResource(R.string.voice_mic_needed_settings)
+            else -> stringResource(R.string.voice_mic_needed)
         },
         category = category,
         insight = insight,
@@ -232,8 +235,8 @@ private fun VoiceCaptureScreen(
         Text(
             text = when {
                 transcript.isNotBlank() -> "\"$transcript\""
-                isListening -> "Listening…"
-                else -> "Hold to speak"
+                isListening -> stringResource(R.string.voice_listening)
+                else -> stringResource(R.string.voice_hold_to_speak)
             },
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
@@ -242,8 +245,8 @@ private fun VoiceCaptureScreen(
         Spacer(Modifier.height(SyloSpacing.stackSm))
         Text(
             text = when {
-                category != null -> "Watching for category: $category"
-                else -> "Press and hold, then release to add"
+                category != null -> stringResource(R.string.voice_watching_category, category)
+                else -> stringResource(R.string.voice_press_hold)
             },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -300,7 +303,7 @@ private fun MicRing(
         ) {
             Icon(
                 Icons.Filled.Mic,
-                contentDescription = "Hold to record",
+                contentDescription = stringResource(R.string.voice_hold_to_record),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(40.dp),
             )
@@ -365,10 +368,11 @@ private fun StatusPill(
     val langBadge = detectedLanguage?.substringBefore('-')?.uppercase()
     val (label, dot) = when {
         error != null -> error.uppercase() to MaterialTheme.colorScheme.error
-        !available -> "UNAVAILABLE" to MaterialTheme.colorScheme.error
-        isListening && langBadge != null -> "LISTENING ($langBadge)..." to SyloBrandCyan
-        isListening -> "LISTENING..." to SyloBrandCyan
-        else -> "HOLD TO SPEAK" to MaterialTheme.colorScheme.onSurfaceVariant
+        !available -> stringResource(R.string.voice_status_unavailable) to MaterialTheme.colorScheme.error
+        isListening && langBadge != null ->
+            stringResource(R.string.voice_status_listening_lang, langBadge) to SyloBrandCyan
+        isListening -> stringResource(R.string.voice_status_listening) to SyloBrandCyan
+        else -> stringResource(R.string.voice_status_hold) to MaterialTheme.colorScheme.onSurfaceVariant
     }
     Row(
         modifier = modifier
@@ -475,10 +479,10 @@ private fun ReviewSheet(
             }
 
             Spacer(Modifier.height(SyloSpacing.stackMd))
-            Text("Review expense", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.voice_review_expense), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(SyloSpacing.stackSm))
             Text(
-                "I heard: \"$transcript\"",
+                stringResource(R.string.voice_i_heard, transcript),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -496,7 +500,7 @@ private fun ReviewSheet(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column {
-                        Text("Amount", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.add_amount_label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(
                             "${currencySymbol(currency)}$amount",
                             style = MaterialTheme.typography.headlineMedium,
@@ -516,7 +520,7 @@ private fun ReviewSheet(
             if (!canSubmit) {
                 Spacer(Modifier.height(SyloSpacing.stackSm))
                 Text(
-                    "No amount detected — tap Edit to enter it.",
+                    stringResource(R.string.voice_no_amount),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.error,
                     textAlign = TextAlign.Center,
@@ -525,13 +529,13 @@ private fun ReviewSheet(
 
             Spacer(Modifier.height(SyloSpacing.stackMd))
             SyloPrimaryButton(
-                text = if (saving) "Saving…" else "Submit",
+                text = if (saving) stringResource(R.string.common_saving) else stringResource(R.string.common_submit),
                 onClick = onSubmit,
                 enabled = canSubmit && !saving,
             )
             Spacer(Modifier.height(SyloSpacing.stackSm))
             OutlinedButton(onClick = onEdit, modifier = Modifier.fillMaxWidth()) {
-                Text("Edit")
+                Text(stringResource(R.string.common_edit))
             }
         }
     }
@@ -540,9 +544,9 @@ private fun ReviewSheet(
 /** The "PREVIOUS CONTEXT" card — a spending insight for the category, or a usage hint. */
 @Composable
 private fun ContextCard(category: String?, insight: String?) {
-    val label = if (insight != null) "PREVIOUS CONTEXT" else "HOW IT WORKS"
+    val label = if (insight != null) stringResource(R.string.voice_previous_context) else stringResource(R.string.voice_how_it_works)
     val message = insight
-        ?: "Hold the mic and say the amount and what it was for — e.g. \"Coffee 45\"."
+        ?: stringResource(R.string.voice_how_it_works_body)
     Surface(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceContainer,
@@ -580,12 +584,13 @@ private fun spendingInsight(
     category: String?,
     transactions: List<TransactionEntity>,
     currency: String,
+    template: String,
 ): String? {
     if (category == null || category == "General") return null
     val same = transactions.filter { it.category.equals(category, ignoreCase = true) }
     if (same.isEmpty()) return null
     val avg = same.map { abs(it.amountMinor) }.average() / 100.0
-    return "You usually spend ~%.0f %s on %s.".format(avg, currency, category.lowercase())
+    return template.format(avg, currency, category.lowercase())
 }
 
 private fun categoryIcon(category: String?): ImageVector = when (category) {

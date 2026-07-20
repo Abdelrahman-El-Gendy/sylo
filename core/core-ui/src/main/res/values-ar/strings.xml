@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Bottom navigation -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_history">السجل</string>
+    <string name="nav_analytics">التحليلات</string>
+    <string name="nav_settings">الإعدادات</string>
+
     <!-- Common -->
     <string name="common_next">التالي</string>
     <string name="common_close">إغلاق</string>
     <string name="common_get_started">ابدأ الآن</string>
     <string name="common_delete">حذف</string>
+    <string name="common_edit">تعديل</string>
+    <string name="common_back">رجوع</string>
     <string name="common_active">مُفعّل</string>
     <string name="common_save_expense">حفظ المصروف</string>
     <string name="common_submit">إرسال</string>
@@ -35,6 +43,7 @@
     <string name="unlock_biometrics">الفتح بالبصمة</string>
     <string name="unlock_forgot_pin">نسيت الرقم السري؟</string>
     <string name="unlock_emergency">طوارئ</string>
+    <string name="unlock_incorrect_pin">رقم سري خاطئ. حاول مرة أخرى.</string>
 
     <!-- Biometric prompts -->
     <string name="bio_unlock_title">فتح Sylo</string>
@@ -114,25 +123,49 @@
     <string name="dash_total_balance">إجمالي الرصيد</string>
     <string name="dash_remaining">المتبقي </string>
     <string name="dash_this_month">هذا الشهر</string>
+    <string name="dash_withdrawals_prefix">السحوبات: </string>
+    <string name="dash_empty_title">لا توجد معاملات بعد</string>
     <string name="dash_recent_transactions">أحدث المعاملات</string>
     <string name="dash_view_all">عرض الكل</string>
+    <string name="dash_sylo_insight">رؤية Sylo</string>
     <string name="dash_top_category">%1$s هي أكثر فئاتك إنفاقًا هذا الشهر (%2$d%%).</string>
     <string name="dash_empty">اضغط على الميكروفون لإضافة أول مصروف بالصوت، أو أضفه يدويًا.</string>
     <string name="dash_add_expense">إضافة مصروف</string>
 
     <!-- Analytics -->
+    <string name="analytics_title">التحليلات</string>
+    <string name="analytics_period_week">أسبوع</string>
+    <string name="analytics_period_month">شهر</string>
+    <string name="analytics_period_year">سنة</string>
+    <string name="analytics_total_spending">إجمالي الإنفاق</string>
     <string name="analytics_category_breakdown">تفصيل الفئات</string>
+    <string name="analytics_empty_title">لا يوجد إنفاق بعد</string>
     <string name="analytics_empty">أضف مصروفات لرؤية تحليلات إنفاقك.</string>
+    <string name="analytics_transactions_count">%1$d معاملات</string>
+    <string name="analytics_percent">%1$d%%</string>
 
     <!-- Add expense -->
     <string name="add_new_expense">مصروف جديد</string>
+    <string name="add_amount_label">المبلغ</string>
+    <string name="add_category_label">الفئة</string>
+    <string name="add_date_label">التاريخ</string>
+    <string name="add_payment_method_label">طريقة الدفع</string>
+    <string name="add_payment_method_personal_debit">بطاقة خصم شخصية</string>
+    <string name="add_note_label">ملاحظة</string>
     <string name="add_note_placeholder">فيمَ كان هذا؟</string>
     <string name="add_attach_receipt">إرفاق إيصال (اختياري)</string>
     <string name="add_attached_receipt">إيصال مُرفق</string>
     <string name="add_remove_receipt">إزالة الإيصال</string>
+    <string name="category_food">طعام</string>
+    <string name="category_travel">سفر</string>
+    <string name="category_shopping">تسوّق</string>
+    <string name="category_leisure">ترفيه</string>
 
     <!-- Transaction detail -->
     <string name="detail_receipt">الإيصال</string>
+    <string name="detail_not_found">المعاملة غير موجودة</string>
+    <string name="detail_category_label">الفئة</string>
+    <string name="detail_status_label">الحالة</string>
 
     <!-- History -->
     <string name="history_search_placeholder">ابحث في المعاملات…</string>
@@ -140,6 +173,11 @@
     <string name="history_empty_none_hint">أضف مصروفًا ليظهر هنا.</string>
     <string name="history_empty_search">لا نتائج</string>
     <string name="history_empty_search_hint">جرّب بحثًا مختلفًا.</string>
+    <string name="history_filter_daily">يومي</string>
+    <string name="history_filter_weekly">أسبوعي</string>
+    <string name="history_filter_monthly">شهري</string>
+    <string name="history_today">اليوم</string>
+    <string name="history_yesterday">أمس</string>
 
     <!-- Voice capture -->
     <string name="voice_hold_to_speak">اضغط مع الاستمرار للتحدث</string>
@@ -160,6 +198,7 @@
     <string name="voice_i_heard">سمعت: \"%1$s\"</string>
     <string name="voice_no_amount">لم يُكتشف مبلغ — اضغط تعديل لإدخاله.</string>
     <string name="voice_edit">تعديل</string>
+    <string name="voice_spending_insight">عادةً ما تُنفق ~%1$.0f %2$s على %3$s.</string>
 
     <!-- Voice review -->
     <string name="review_title">مراجعة المعاملة</string>
@@ -167,6 +206,8 @@
     <string name="review_no_amount">لم يُكتشف مبلغ. اضغط \"تعديل التفاصيل\" لإدخاله يدويًا.</string>
     <string name="review_confirm_save">تأكيد وحفظ</string>
     <string name="review_edit_details">تعديل التفاصيل</string>
+    <string name="review_saved_to_label">حُفظ في</string>
+    <string name="review_saved_to_value">قاعدة بيانات محلية مُشفّرة</string>
 
     <!-- Notifications -->
     <string name="notif_title">الإشعارات</string>
@@ -177,5 +218,9 @@
     <string name="notif_hours_ago">منذ %1$d س</string>
     <string name="notif_yesterday">أمس</string>
     <string name="notif_days_ago">منذ %1$d ي</string>
+    <string name="notif_today">اليوم</string>
+    <string name="notif_earlier">سابقًا</string>
+    <string name="notif_all_caught_up">أنت على اطّلاع بكل شيء</string>
+    <string name="notif_empty_hint">ستظهر هنا تنبيهات إنفاقك.</string>
 
 </resources>

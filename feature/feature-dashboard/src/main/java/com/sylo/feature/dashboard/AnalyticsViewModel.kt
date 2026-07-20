@@ -1,10 +1,12 @@
 package com.sylo.feature.dashboard
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sylo.core.database.TransactionRepository
 import com.sylo.core.database.entity.TransactionEntity
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.categoryIcon
 import com.sylo.core.ui.component.formatMoney
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +19,10 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import javax.inject.Inject
 
-enum class AnalyticsPeriod(val label: String, val days: Int) {
-    Week("Week", 7), Month("Month", 30), Year("Year", 365)
+enum class AnalyticsPeriod(@StringRes val labelRes: Int, val days: Int) {
+    Week(R.string.analytics_period_week, 7),
+    Month(R.string.analytics_period_month, 30),
+    Year(R.string.analytics_period_year, 365)
 }
 
 data class CategorySpend(
