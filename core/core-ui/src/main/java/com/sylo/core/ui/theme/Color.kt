@@ -67,3 +67,61 @@ internal object SyloPalette {
     /** The vivid brand cyan used for logo, key CTAs and accents. */
     val BrandCyan = SyloBrandCyan
 }
+
+/**
+ * Sylo light tonal scheme — a Material 3 light neutral-teal palette that mirrors the
+ * dark [SyloPalette] roles, used when the user (or system) selects the light theme.
+ * The brand cyan accent ([SyloBrandCyan]) is shared across both themes.
+ */
+internal object SyloLightPalette {
+    // Primary (deep teal for contrast on light surfaces)
+    val Primary = Color(0xFF006970)
+    val OnPrimary = Color(0xFFFFFFFF)
+    val PrimaryContainer = Color(0xFF9EF0F8)
+    val OnPrimaryContainer = Color(0xFF002022)
+    val InversePrimary = Color(0xFF4DD9E6)
+
+    // Secondary (neutral)
+    val Secondary = Color(0xFF4A6365)
+    val OnSecondary = Color(0xFFFFFFFF)
+    val SecondaryContainer = Color(0xFFCCE8E9)
+    val OnSecondaryContainer = Color(0xFF051F21)
+
+    // Tertiary
+    val Tertiary = Color(0xFF4B607C)
+    val OnTertiary = Color(0xFFFFFFFF)
+    val TertiaryContainer = Color(0xFFD3E4FF)
+    val OnTertiaryContainer = Color(0xFF041C35)
+
+    // Error
+    val Error = Color(0xFFBA1A1A)
+    val OnError = Color(0xFFFFFFFF)
+    val ErrorContainer = Color(0xFFFFDAD6)
+    val OnErrorContainer = Color(0xFF410002)
+
+    // Background / surface
+    val Background = Color(0xFFF5FAFB)
+    val OnBackground = Color(0xFF171D1E)
+    val Surface = Color(0xFFF5FAFB)
+    val OnSurface = Color(0xFF171D1E)
+    val SurfaceVariant = Color(0xFFDBE4E5)
+    val OnSurfaceVariant = Color(0xFF3F484A)
+    val SurfaceTint = Color(0xFF006970)
+
+    // Surface container tones
+    val SurfaceContainerLowest = Color(0xFFFFFFFF)
+    val SurfaceContainerLow = Color(0xFFEFF5F6)
+    val SurfaceContainer = Color(0xFFE9EFF0)
+    val SurfaceContainerHigh = Color(0xFFE3E9EA)
+    val SurfaceContainerHighest = Color(0xFFDDE3E4)
+    val SurfaceBright = Color(0xFFF5FAFB)
+    val SurfaceDim = Color(0xFFD5DBDC)
+
+    // Outline
+    val Outline = Color(0xFF6F797A)
+    val OutlineVariant = Color(0xFFBFC8CA)
+
+    // Inverse
+    val InverseSurface = Color(0xFF2B3133)
+    val InverseOnSurface = Color(0xFFECF2F3)
+}

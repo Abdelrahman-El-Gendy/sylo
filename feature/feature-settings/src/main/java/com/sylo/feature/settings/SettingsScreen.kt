@@ -1,8 +1,10 @@
 package com.sylo.feature.settings
 
 import android.Manifest
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,17 +46,20 @@ import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -74,6 +80,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -83,11 +90,13 @@ import java.util.UUID
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sylo.core.ui.R
 import com.sylo.core.ui.component.SectionLabel
 import com.sylo.core.ui.component.SyloCard
 import com.sylo.core.ui.theme.SyloBrandCyan
 import com.sylo.core.ui.theme.SyloIncomeGreen
 import com.sylo.core.ui.theme.SyloSpacing
+import com.sylo.core.ui.theme.ThemeMode
 
 @Composable
 fun SettingsRoute(
@@ -96,6 +105,8 @@ fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
+    val languageTag by viewModel.languageTag.collectAsStateWithLifecycle()
     val biometricAvailable = viewModel.biometricAvailable
     val context = LocalContext.current
 
@@ -106,6 +117,9 @@ fun SettingsRoute(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val smsPermissionNeededMessage = stringResource(R.string.settings_sms_permission_needed)
+    val profileUpdatedMessage = stringResource(R.string.settings_profile_updated)
+    val balanceUpdatedMessage = stringResource(R.string.settings_balance_updated)
 
     // Profile photo picker — copies the chosen image into internal storage.
     val pickPhoto = rememberLauncherForActivityResult(
@@ -122,7 +136,7 @@ fun SettingsRoute(
         if (grants[Manifest.permission.READ_SMS] == true) {
             viewModel.setSmsImportEnabled(true)
         } else {
-            scope.launch { snackbarHostState.showSnackbar("SMS permission is needed to import bank statements") }
+            scope.launch { snackbarHostState.showSnackbar(smsPermissionNeededMessage) }
         }
     }
 
@@ -134,7 +148,7 @@ fun SettingsRoute(
             onSave = { name ->
                 viewModel.saveDisplayName(name)
                 showNameDialog = false
-                scope.launch { snackbarHostState.showSnackbar("Profile updated") }
+                scope.launch { snackbarHostState.showSnackbar(profileUpdatedMessage) }
             },
         )
     }
@@ -145,8 +159,32 @@ fun SettingsRoute(
             onDismiss = { showBalanceSheet = false },
             onSaved = {
                 showBalanceSheet = false
-                scope.launch { snackbarHostState.showSnackbar("Balance updated") }
+                scope.launch { snackbarHostState.showSnackbar(balanceUpdatedMessage) }
             },
+        )
+    }
+
+    var showThemeDialog by remember { mutableStateOf(false) }
+    if (showThemeDialog) {
+        ThemeDialog(
+            selected = themeMode,
+            onSelect = { viewModel.setThemeMode(it) },
+            onDismiss = { showThemeDialog = false },
+        )
+    }
+
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    if (showLanguageDialog) {
+        LanguageDialog(
+            selected = languageTag,
+            onSelect = { tag ->
+                viewModel.setLanguageTag(tag)
+                showLanguageDialog = false
+                // The base context locale is fixed at attachBaseContext time, so the
+                // Activity must be recreated for the new language to take effect.
+                context.findActivity()?.recreate()
+            },
+            onDismiss = { showLanguageDialog = false },
         )
     }
 
@@ -159,7 +197,7 @@ fun SettingsRoute(
         verticalArrangement = Arrangement.spacedBy(SyloSpacing.stackMd),
     ) {
         Spacer(Modifier.height(SyloSpacing.stackSm))
-        Text("Profile", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.settings_profile), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
 
         ProfileHeader(
             name = uiState.displayName,
@@ -174,13 +212,13 @@ fun SettingsRoute(
         SyloProCard()
         StatsGrid(uiState.stats)
 
-        SectionLabel("Identity")
+        SectionLabel(stringResource(R.string.settings_section_identity))
         SyloCard {
             SettingsRow(
                 icon = Icons.Filled.VerifiedUser,
-                title = "Verify email",
-                subtitle = uiState.verifiedEmail?.let { "Verified · $it" }
-                    ?: "Confirm your email with Google — no OTP",
+                title = stringResource(R.string.settings_verify_email),
+                subtitle = uiState.verifiedEmail?.let { stringResource(R.string.settings_verified_prefix, it) }
+                    ?: stringResource(R.string.settings_verify_email_subtitle),
                 trailing = when {
                     uiState.verifyingEmail -> ({
                         CircularProgressIndicator(
@@ -204,17 +242,17 @@ fun SettingsRoute(
             )
         }
 
-        SectionLabel("Security")
+        SectionLabel(stringResource(R.string.settings_section_security))
         SyloCard {
             Column {
-                SettingsRow(Icons.Filled.Lock, "Change PIN", onClick = onChangePin)
+                SettingsRow(Icons.Filled.Lock, stringResource(R.string.settings_change_pin), onClick = onChangePin)
                 SettingsRow(
                     icon = Icons.Filled.Fingerprint,
-                    title = "Biometrics",
+                    title = stringResource(R.string.settings_biometrics),
                     subtitle = when {
-                        !biometricAvailable -> "Not available on this device"
-                        uiState.dbBiometricBound -> "Unlocks your encrypted database"
-                        else -> "Use fingerprint or face to unlock"
+                        !biometricAvailable -> stringResource(R.string.settings_biometrics_unavailable)
+                        uiState.dbBiometricBound -> stringResource(R.string.settings_biometrics_bound)
+                        else -> stringResource(R.string.settings_biometrics_use)
                     },
                     trailing = {
                         Switch(
@@ -226,8 +264,10 @@ fun SettingsRoute(
                 )
                 SettingsRow(
                     icon = Icons.Filled.AccountBalanceWallet,
-                    title = "Auto-capture payments",
-                    subtitle = if (autoCaptureEnabled) "Reading bank & wallet notifications" else "Tap to grant notification access",
+                    title = stringResource(R.string.settings_autocapture),
+                    subtitle = stringResource(
+                        if (autoCaptureEnabled) R.string.settings_autocapture_on else R.string.settings_autocapture_off,
+                    ),
                     trailing = if (autoCaptureEnabled) ({ ActivePill() }) else null,
                     onClick = {
                         context.startActivity(
@@ -238,12 +278,10 @@ fun SettingsRoute(
                 )
                 SettingsRow(
                     icon = Icons.Filled.Sms,
-                    title = "Import bank SMS",
-                    subtitle = if (uiState.smsImportEnabled) {
-                        "Scanning today's bank messages"
-                    } else {
-                        "Read bank SMS to auto-log expenses"
-                    },
+                    title = stringResource(R.string.settings_import_sms),
+                    subtitle = stringResource(
+                        if (uiState.smsImportEnabled) R.string.settings_import_sms_on else R.string.settings_import_sms_off,
+                    ),
                     trailing = {
                         Switch(
                             checked = uiState.smsImportEnabled,
@@ -266,21 +304,35 @@ fun SettingsRoute(
             }
         }
 
-        SectionLabel("Preferences")
-        SyloCard {
-            SettingsRow(
-                icon = Icons.Filled.AttachMoney,
-                title = "Balance & Currency",
-                subtitle = "Set your opening balance and currency",
-                onClick = { showBalanceSheet = true },
-            )
-        }
-
-        SectionLabel("Support")
+        SectionLabel(stringResource(R.string.settings_section_preferences))
         SyloCard {
             Column {
-                SettingsRow(Icons.Filled.HelpOutline, "Help Center", onClick = { context.openUrl(HELP_URL) })
-                SettingsRow(Icons.Filled.Description, "Terms of Service", onClick = { context.openUrl(TERMS_URL) })
+                SettingsRow(
+                    icon = Icons.Filled.AttachMoney,
+                    title = stringResource(R.string.settings_balance_currency),
+                    subtitle = stringResource(R.string.settings_balance_currency_subtitle),
+                    onClick = { showBalanceSheet = true },
+                )
+                SettingsRow(
+                    icon = Icons.Outlined.DarkMode,
+                    title = stringResource(R.string.settings_theme),
+                    subtitle = themeMode.label(),
+                    onClick = { showThemeDialog = true },
+                )
+                SettingsRow(
+                    icon = Icons.Filled.Language,
+                    title = stringResource(R.string.settings_language),
+                    subtitle = languageLabel(languageTag),
+                    onClick = { showLanguageDialog = true },
+                )
+            }
+        }
+
+        SectionLabel(stringResource(R.string.settings_section_support))
+        SyloCard {
+            Column {
+                SettingsRow(Icons.Filled.HelpOutline, stringResource(R.string.settings_help_center), onClick = { context.openUrl(HELP_URL) })
+                SettingsRow(Icons.Filled.Description, stringResource(R.string.settings_terms), onClick = { context.openUrl(TERMS_URL) })
             }
         }
 
@@ -288,7 +340,7 @@ fun SettingsRoute(
         SyloCard {
             SettingsRow(
                 icon = Icons.AutoMirrored.Filled.Logout,
-                title = "Logout",
+                title = stringResource(R.string.settings_logout),
                 tint = MaterialTheme.colorScheme.error,
                 showChevron = false,
                 onClick = onLoggedOut,
@@ -296,7 +348,7 @@ fun SettingsRoute(
         }
 
         Text(
-            "SYLO FINANCE ENGINE V2.4.1\nIntelligent. Secure. Trustworthy.",
+            stringResource(R.string.settings_footer),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -339,7 +391,7 @@ private fun ProfileHeader(
                 if (photoBitmap != null) {
                     Image(
                         bitmap = photoBitmap.asImageBitmap(),
-                        contentDescription = "Profile photo",
+                        contentDescription = stringResource(R.string.settings_profile_photo),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize().clip(CircleShape),
                     )
@@ -358,7 +410,7 @@ private fun ProfileHeader(
             ) {
                 Icon(
                     Icons.Filled.PhotoCamera,
-                    contentDescription = "Change photo",
+                    contentDescription = stringResource(R.string.settings_change_photo),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(16.dp),
                 )
@@ -370,10 +422,10 @@ private fun ProfileHeader(
             modifier = Modifier.clickable(onClick = onEditName),
         ) {
             Text(name, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-            Icon(Icons.Filled.Edit, contentDescription = "Edit name", tint = SyloBrandCyan, modifier = Modifier.size(18.dp))
+            Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.settings_edit_name), tint = SyloBrandCyan, modifier = Modifier.size(18.dp))
         }
         Text(
-            "Secured locally with PIN + biometrics",
+            stringResource(R.string.settings_secured_locally),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -385,18 +437,108 @@ private fun EditNameDialog(initial: String, onDismiss: () -> Unit, onSave: (Stri
     var text by remember { mutableStateOf(initial) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Your name") },
+        title = { Text(stringResource(R.string.settings_name_dialog_title)) },
         text = {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
                 singleLine = true,
-                placeholder = { Text("Enter your name") },
+                placeholder = { Text(stringResource(R.string.settings_enter_name)) },
             )
         },
-        confirmButton = { TextButton(onClick = { onSave(text) }) { Text("Save") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        confirmButton = { TextButton(onClick = { onSave(text) }) { Text(stringResource(R.string.settings_name_dialog_save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } },
     )
+}
+
+/** Dialog offering the three [ThemeMode] choices as radio options. */
+@Composable
+private fun ThemeDialog(selected: ThemeMode, onSelect: (ThemeMode) -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_theme)) },
+        text = {
+            Column {
+                ThemeMode.entries.forEach { mode ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onSelect(mode)
+                                onDismiss()
+                            }
+                            .padding(vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(selected = mode == selected, onClick = { onSelect(mode); onDismiss() })
+                        Spacer(Modifier.width(SyloSpacing.stackSm))
+                        Text(mode.label())
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } },
+    )
+}
+
+/** Dialog offering System / English / Arabic as radio options for the app language. */
+@Composable
+private fun LanguageDialog(selected: String, onSelect: (String) -> Unit, onDismiss: () -> Unit) {
+    val options = listOf(
+        "" to stringResource(R.string.language_system),
+        "en" to stringResource(R.string.language_english),
+        "ar" to stringResource(R.string.language_arabic),
+    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_language)) },
+        text = {
+            Column {
+                options.forEach { (tag, label) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(tag) }
+                            .padding(vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(selected = tag == selected, onClick = { onSelect(tag) })
+                        Spacer(Modifier.width(SyloSpacing.stackSm))
+                        Text(label)
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } },
+    )
+}
+
+@Composable
+private fun ThemeMode.label(): String = stringResource(
+    when (this) {
+        ThemeMode.SYSTEM -> R.string.theme_system
+        ThemeMode.LIGHT -> R.string.theme_light
+        ThemeMode.DARK -> R.string.theme_dark
+    },
+)
+
+@Composable
+private fun languageLabel(tag: String): String = stringResource(
+    when (tag) {
+        "en" -> R.string.language_english
+        "ar" -> R.string.language_arabic
+        else -> R.string.language_system
+    },
+)
+
+/** Unwraps the hosting [Activity] from a Compose [Context], or null if not found. */
+private fun Context.findActivity(): Activity? {
+    var ctx: Context? = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
 }
 
 /** Copies a picked image [uri] into app-internal storage and returns its absolute path. */
@@ -423,16 +565,16 @@ private fun SyloProCard() {
         ) {
             Icon(Icons.Filled.Diamond, contentDescription = null, tint = SyloBrandCyan)
             Column(Modifier.weight(1f)) {
-                Text("Sylo Pro", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.settings_pro_title), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
                 Text(
-                    "Advanced insights & unlimited voice capture",
+                    stringResource(R.string.settings_pro_subtitle),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Surface(shape = RoundedCornerShape(50), color = SyloBrandCyan) {
                 Text(
-                    "Upgrade",
+                    stringResource(R.string.settings_upgrade),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.SemiBold,
@@ -447,12 +589,12 @@ private fun SyloProCard() {
 private fun StatsGrid(stats: ProfileStats) {
     Column(verticalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
         Row(horizontalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
-            StatCard("Total Saved", stats.totalBalance, Icons.Filled.AccountBalanceWallet, SyloIncomeGreen, Modifier.weight(1f))
-            StatCard("Days Tracking", stats.daysTracking, Icons.Filled.CalendarMonth, SyloBrandCyan, Modifier.weight(1f))
+            StatCard(stringResource(R.string.settings_stat_total_saved), stats.totalBalance, Icons.Filled.AccountBalanceWallet, SyloIncomeGreen, Modifier.weight(1f))
+            StatCard(stringResource(R.string.settings_stat_days_tracking), stats.daysTracking, Icons.Filled.CalendarMonth, SyloBrandCyan, Modifier.weight(1f))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(SyloSpacing.stackSm)) {
-            StatCard("Transactions", stats.transactions, Icons.AutoMirrored.Filled.ReceiptLong, SyloBrandCyan, Modifier.weight(1f))
-            StatCard("This Month", stats.thisMonth, Icons.Filled.Savings, SyloBrandCyan, Modifier.weight(1f))
+            StatCard(stringResource(R.string.settings_stat_transactions), stats.transactions, Icons.AutoMirrored.Filled.ReceiptLong, SyloBrandCyan, Modifier.weight(1f))
+            StatCard(stringResource(R.string.settings_stat_this_month), stats.thisMonth, Icons.Filled.Savings, SyloBrandCyan, Modifier.weight(1f))
         }
     }
 }
@@ -511,7 +653,7 @@ private fun SettingsRow(
 private fun ActivePill() {
     Surface(shape = RoundedCornerShape(50), color = SyloBrandCyan.copy(alpha = 0.15f)) {
         Text(
-            "ACTIVE",
+            stringResource(R.string.common_active),
             style = MaterialTheme.typography.labelSmall,
             color = SyloBrandCyan,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -528,7 +670,7 @@ private fun VerifiedPill() {
         ) {
             Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = SyloBrandCyan, modifier = Modifier.size(14.dp))
             Spacer(Modifier.size(4.dp))
-            Text("VERIFIED", style = MaterialTheme.typography.labelSmall, color = SyloBrandCyan)
+            Text(stringResource(R.string.settings_verified_badge), style = MaterialTheme.typography.labelSmall, color = SyloBrandCyan)
         }
     }
 }
@@ -554,6 +696,6 @@ private fun Context.openUrl(url: String) {
     try {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     } catch (e: ActivityNotFoundException) {
-        Toast.makeText(this, "No browser available", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.common_no_browser), Toast.LENGTH_SHORT).show()
     }
 }

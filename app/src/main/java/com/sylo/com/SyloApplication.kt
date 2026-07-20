@@ -1,9 +1,11 @@
 package com.sylo.com
 
 import android.app.Application
+import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.sylo.com.sms.BankSmsCaptureScheduler
+import com.sylo.core.common.locale.LocaleHelper
 import com.sylo.core.database.UserPreferencesRepository
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +19,10 @@ import javax.inject.Inject
 /** Hilt application root — the top of the DI graph for the whole app. */
 @HiltAndroidApp
 class SyloApplication : Application(), Configuration.Provider {
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LocaleHelper.wrap(base))
+    }
 
     /** Lets WorkManager construct our @HiltWorker with its injected dependencies. */
     @Inject lateinit var workerFactory: HiltWorkerFactory

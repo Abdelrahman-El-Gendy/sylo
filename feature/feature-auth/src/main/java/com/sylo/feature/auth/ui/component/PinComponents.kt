@@ -39,8 +39,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.res.stringResource
+import com.sylo.core.ui.R
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -155,6 +160,11 @@ fun PinKeypad(
         targetValue = if (enabled) 1f else 0.45f,
         label = "keypadAlpha",
     )
+    // Numeric keypads are a universal convention (phone dialers, calculators): the
+    // digit grid always reads 1-2-3 / 4-5-6 / 7-8-9 left-to-right, even in RTL
+    // languages. Force LTR here so Compose's automatic RTL mirroring of Row doesn't
+    // reverse the digit order (which it does by default — 3-2-1 in Arabic otherwise).
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -173,7 +183,7 @@ fun PinKeypad(
                             '\b' -> KeypadCell(enabled = enabled, onClick = onBackspace) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.Backspace,
-                                    contentDescription = "Delete",
+                                    contentDescription = stringResource(R.string.common_delete),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
@@ -190,6 +200,7 @@ fun PinKeypad(
                 }
             }
         }
+    }
     }
 }
 

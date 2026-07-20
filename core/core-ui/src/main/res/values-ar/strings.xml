@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Common -->
+    <string name="common_next">التالي</string>
+    <string name="common_close">إغلاق</string>
+    <string name="common_get_started">ابدأ الآن</string>
+    <string name="common_delete">حذف</string>
+    <string name="common_active">مُفعّل</string>
+    <string name="common_save_expense">حفظ المصروف</string>
+    <string name="common_submit">إرسال</string>
+    <string name="common_saving">جارٍ الحفظ…</string>
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_no_browser">لا يوجد متصفح متاح</string>
+
+    <!-- Onboarding -->
+    <string name="onb_capture_label">التقاط</string>
+    <string name="onb_capture_value">صوت</string>
+    <string name="onb_voice_title">تتبّع مصروفاتك بالصوت</string>
+    <string name="onb_voice_body">قل ما أنفقته فقط — يلتقط Sylo المبلغ والفئة في ثوانٍ.</string>
+    <string name="onb_insights_label">رؤى</string>
+    <string name="onb_insights_value">٨٤٪</string>
+    <string name="onb_insights_title">شاهد الصورة كاملة</string>
+    <string name="onb_insights_body">رؤى تلقائية ورسوم واضحة تساعدك على فهم عاداتك في الإنفاق بلمحة.</string>
+    <string name="onb_secure_label">آمن</string>
+    <string name="onb_secure_value">مُقفَل</string>
+    <string name="onb_secure_title">خصوصية وأمان بالتصميم</string>
+    <string name="onb_secure_body">بياناتك مُشفّرة على جهازك ومحمية برقمك السري وبصمتك. لا شيء يغادر هاتفك.</string>
+    <string name="onb_chip_saving">توفير</string>
+
+    <!-- PIN unlock -->
+    <string name="unlock_welcome">مرحبًا بعودتك</string>
+    <string name="unlock_verifying">جارٍ التحقق…</string>
+    <string name="unlock_enter_pin">أدخل الرقم السري لفتح Sylo</string>
+    <string name="unlock_biometrics">الفتح بالبصمة</string>
+    <string name="unlock_forgot_pin">نسيت الرقم السري؟</string>
+    <string name="unlock_emergency">طوارئ</string>
+
+    <!-- Biometric prompts -->
+    <string name="bio_unlock_title">فتح Sylo</string>
+    <string name="bio_unlock_subtitle_decrypt">أكّد هويتك لفك تشفير بياناتك</string>
+    <string name="bio_unlock_subtitle">أكّد هويتك للفتح</string>
+    <string name="bio_bind_title">تفعيل الفتح بالبصمة</string>
+    <string name="bio_bind_subtitle">اربط بياناتك المُشفّرة ببصمتك</string>
+
+    <!-- PIN setup -->
+    <string name="pin_create_title">أنشئ رقمك السري</string>
+    <string name="pin_create_subtitle">سيُستخدم هذا الرقم لاعتماد المعاملات وحماية بياناتك المالية.</string>
+    <string name="pin_enable_biometric">تفعيل الدخول بالبصمة</string>
+    <string name="pin_e2e_storage">تخزين مُشفّر من طرف إلى طرف</string>
+
+    <!-- Settings -->
+    <string name="settings_profile">الملف الشخصي</string>
+    <string name="settings_secured_locally">محمي محليًا برقم سري وبصمة</string>
+    <string name="settings_pro_title">Sylo Pro</string>
+    <string name="settings_pro_subtitle">رؤى متقدمة والتقاط صوتي غير محدود</string>
+    <string name="settings_upgrade">ترقية</string>
+    <string name="settings_profile_updated">تم تحديث الملف الشخصي</string>
+    <string name="settings_balance_updated">تم تحديث الرصيد</string>
+    <string name="settings_your_name">اسمك</string>
+    <string name="settings_enter_name">أدخل اسمك</string>
+    <string name="settings_profile_photo">صورة الملف الشخصي</string>
+    <string name="settings_change_photo">تغيير الصورة</string>
+    <string name="settings_section_identity">الهوية</string>
+    <string name="settings_section_security">الأمان</string>
+    <string name="settings_section_preferences">التفضيلات</string>
+    <string name="settings_section_support">الدعم</string>
+    <string name="settings_verify_email">تأكيد البريد الإلكتروني</string>
+    <string name="settings_verify_email_subtitle">أكّد بريدك عبر Google — بدون رمز تحقق</string>
+    <string name="settings_verified_prefix">مُؤكَّد · %1$s</string>
+    <string name="settings_change_pin">تغيير الرقم السري</string>
+    <string name="settings_biometrics">البصمة</string>
+    <string name="settings_biometrics_unavailable">غير متاحة على هذا الجهاز</string>
+    <string name="settings_biometrics_bound">تفتح قاعدة بياناتك المُشفّرة</string>
+    <string name="settings_biometrics_use">استخدم البصمة أو الوجه للفتح</string>
+    <string name="settings_autocapture">التقاط المدفوعات تلقائيًا</string>
+    <string name="settings_autocapture_on">قراءة إشعارات البنوك والمحافظ</string>
+    <string name="settings_autocapture_off">اضغط لمنح صلاحية الإشعارات</string>
+    <string name="settings_import_sms">استيراد رسائل البنك</string>
+    <string name="settings_import_sms_on">يتم فحص رسائل البنك لليوم</string>
+    <string name="settings_import_sms_off">قراءة رسائل البنك لتسجيل المصروفات تلقائيًا</string>
+    <string name="settings_balance_currency">الرصيد والعملة</string>
+    <string name="settings_balance_currency_subtitle">اضبط رصيدك الافتتاحي والعملة</string>
+    <string name="settings_theme">المظهر</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_help_center">مركز المساعدة</string>
+    <string name="settings_terms">شروط الخدمة</string>
+    <string name="settings_logout">تسجيل الخروج</string>
+    <string name="settings_footer">محرك Sylo المالي V2.4.1\nذكي. آمن. جدير بالثقة.</string>
+    <string name="settings_sms_permission_needed">إذن الرسائل مطلوب لاستيراد كشوف الحساب البنكية</string>
+    <string name="settings_stat_total_saved">إجمالي التوفير</string>
+    <string name="settings_stat_days_tracking">أيام التتبع</string>
+    <string name="settings_stat_transactions">المعاملات</string>
+    <string name="settings_stat_this_month">هذا الشهر</string>
+    <string name="settings_name_dialog_title">اسمك</string>
+    <string name="settings_name_dialog_save">حفظ</string>
+    <string name="settings_edit_name">تعديل الاسم</string>
+    <string name="settings_verified_badge">مُوثّق</string>
+    <string name="settings_verify_success">تم توثيق %1$s</string>
+    <string name="settings_verify_no_credential">لا يوجد بريد إلكتروني موثّق على هذا الجهاز</string>
+    <string name="settings_verify_error">تعذّر توثيق البريد الإلكتروني. حاول مرة أخرى.</string>
+
+    <!-- Theme options -->
+    <string name="theme_system">إعداد النظام</string>
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+
+    <!-- Language options -->
+    <string name="language_system">إعداد النظام</string>
+    <string name="language_english">English</string>
+    <string name="language_arabic">العربية</string>
+
+    <!-- Dashboard -->
+    <string name="dash_total_balance">إجمالي الرصيد</string>
+    <string name="dash_remaining">المتبقي </string>
+    <string name="dash_this_month">هذا الشهر</string>
+    <string name="dash_recent_transactions">أحدث المعاملات</string>
+    <string name="dash_view_all">عرض الكل</string>
+    <string name="dash_top_category">%1$s هي أكثر فئاتك إنفاقًا هذا الشهر (%2$d%%).</string>
+    <string name="dash_empty">اضغط على الميكروفون لإضافة أول مصروف بالصوت، أو أضفه يدويًا.</string>
+    <string name="dash_add_expense">إضافة مصروف</string>
+
+    <!-- Analytics -->
+    <string name="analytics_category_breakdown">تفصيل الفئات</string>
+    <string name="analytics_empty">أضف مصروفات لرؤية تحليلات إنفاقك.</string>
+
+    <!-- Add expense -->
+    <string name="add_new_expense">مصروف جديد</string>
+    <string name="add_note_placeholder">فيمَ كان هذا؟</string>
+    <string name="add_attach_receipt">إرفاق إيصال (اختياري)</string>
+    <string name="add_attached_receipt">إيصال مُرفق</string>
+    <string name="add_remove_receipt">إزالة الإيصال</string>
+
+    <!-- Transaction detail -->
+    <string name="detail_receipt">الإيصال</string>
+
+    <!-- History -->
+    <string name="history_search_placeholder">ابحث في المعاملات…</string>
+    <string name="history_empty_none">لا توجد معاملات بعد</string>
+    <string name="history_empty_none_hint">أضف مصروفًا ليظهر هنا.</string>
+    <string name="history_empty_search">لا نتائج</string>
+    <string name="history_empty_search_hint">جرّب بحثًا مختلفًا.</string>
+
+    <!-- Voice capture -->
+    <string name="voice_hold_to_speak">اضغط مع الاستمرار للتحدث</string>
+    <string name="voice_listening">جارٍ الاستماع…</string>
+    <string name="voice_press_hold">اضغط مع الاستمرار ثم أفلِت للإضافة</string>
+    <string name="voice_watching_category">تتبّع الفئة: %1$s</string>
+    <string name="voice_hold_to_record">اضغط مع الاستمرار للتسجيل</string>
+    <string name="voice_mic_needed_settings">اضغط على الميكروفون لتفعيله من الإعدادات</string>
+    <string name="voice_mic_needed">اضغط على الميكروفون للسماح بالوصول إليه</string>
+    <string name="voice_status_hold">اضغط للتحدث</string>
+    <string name="voice_status_listening">يستمع…</string>
+    <string name="voice_status_listening_lang">يستمع (%1$s)…</string>
+    <string name="voice_status_unavailable">غير متاح</string>
+    <string name="voice_how_it_works">كيف يعمل</string>
+    <string name="voice_previous_context">سياق سابق</string>
+    <string name="voice_how_it_works_body">اضغط على الميكروفون وقل المبلغ وسببه — مثل \"قهوة 45\".</string>
+    <string name="voice_review_expense">مراجعة المصروف</string>
+    <string name="voice_i_heard">سمعت: \"%1$s\"</string>
+    <string name="voice_no_amount">لم يُكتشف مبلغ — اضغط تعديل لإدخاله.</string>
+    <string name="voice_edit">تعديل</string>
+
+    <!-- Voice review -->
+    <string name="review_title">مراجعة المعاملة</string>
+    <string name="review_i_heard">سمعت: \"%1$s\". هل هذا صحيح؟</string>
+    <string name="review_no_amount">لم يُكتشف مبلغ. اضغط \"تعديل التفاصيل\" لإدخاله يدويًا.</string>
+    <string name="review_confirm_save">تأكيد وحفظ</string>
+    <string name="review_edit_details">تعديل التفاصيل</string>
+
+    <!-- Notifications -->
+    <string name="notif_title">الإشعارات</string>
+    <string name="notif_mark_all_read">تعليم الكل كمقروء</string>
+    <string name="notif_clear_all">مسح كل الإشعارات</string>
+    <string name="notif_just_now">الآن</string>
+    <string name="notif_minutes_ago">منذ %1$d د</string>
+    <string name="notif_hours_ago">منذ %1$d س</string>
+    <string name="notif_yesterday">أمس</string>
+    <string name="notif_days_ago">منذ %1$d ي</string>
+
+</resources>
